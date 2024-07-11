@@ -5,4 +5,5 @@ sealed class CalculatorOperation(val symbol: String) {
     object  Subtraction:  CalculatorOperation("-")
     object  Multiply:  CalculatorOperation("*")
     object  Divide:  CalculatorOperation("/")
+    object  Exponent:  CalculatorOperation("^")
 }

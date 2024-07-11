@@ -1,14 +1,10 @@
 package com.example.android_calculator
 
-import android.util.Log
-import androidx.compose.runtime.collectAsState
-import  androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.pow
 
 class CalculatorViewModel: ViewModel() {
     private val _state = MutableStateFlow(CalculatorState())
@@ -16,10 +12,9 @@ class CalculatorViewModel: ViewModel() {
 
     fun onAction(action: CalculatorAction) {
         when(action){
-            is CalculatorAction.Number -> enterNumber(action.number)
+            is CalculatorAction.Character -> enterChar(c = action.c)
             is CalculatorAction.Decimal -> enterDecimal()
             is CalculatorAction.Clear -> performClear()
-            is CalculatorAction.Operation -> enterOperation(action.operation)
             is CalculatorAction.Calculate -> performOperation()
             is CalculatorAction.Delete -> performeDelete()
         }
@@ -30,20 +25,61 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun performeDelete() {
-        when {
-            _state.value.number2.isNotBlank() -> _state.value=_state.value.copy(
-                number2 = _state.value.number2.dropLast(1)
-            )
-            _state.value.operation != null -> _state.value=_state.value.copy(
-                operation = null
-            )
-            _state.value.number1.isNotBlank() -> _state.value=_state.value.copy(
-                number1 = _state.value.number1.dropLast(1)
-            )
-        }
+        _state.value = _state.value.copy(
+            expression = _state.value.expression.dropLast(1)
+        )
     }
 
     private fun performOperation() {
+        while(!isDouble(_state.value.expression)) {
+            if (_state.value.expression.contains("*", ignoreCase = true)
+                || _state.value.expression.contains("/", ignoreCase = true)
+                || _state.value.expression.contains("^", ignoreCase = true)
+            ) {
+                for (i in 1.._state.value.expression.length) {
+                    if (_state.value.expression[i] == '*' || _state.value.expression[i] == '/' || _state.value.expression[i] == '^') {
+                        val indexNumbers = getNumbers(i)
+                        val n1: Double =
+                            _state.value.expression.substring(indexNumbers[0], i).toDouble()
+                        val n2: Double =
+                            _state.value.expression.substring(i + 1, indexNumbers[1]).toDouble()
+                        val result: Double = getResult(n1, n2, _state.value.expression[i])
+                        _state.value = _state.value.copy(
+                            expression = _state.value.expression.substring(
+                                0,
+                                indexNumbers[0]
+                            ) + result.toString() + _state.value.expression.substring(
+                                indexNumbers[1],
+                                _state.value.expression.length
+                            )
+                        )
+                    }
+                }
+            }
+            else{
+                for (i in 1.._state.value.expression.length) {
+                    if (_state.value.expression[i] == '+' || _state.value.expression[i] == '-') {
+                        val indexNumbers = getNumbers(i)
+                        val n1: Double =
+                            _state.value.expression.substring(indexNumbers[0], i).toDouble()
+                        val n2: Double =
+                            _state.value.expression.substring(i + 1, indexNumbers[1]).toDouble()
+                        val result: Double = getResult(n1, n2, _state.value.expression[i])
+                        _state.value = _state.value.copy(
+                            expression = _state.value.expression.substring(
+                                0,
+                                indexNumbers[0]
+                            ) + result.toString() + _state.value.expression.substring(
+                                indexNumbers[1],
+                                _state.value.expression.length
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        /*
         val number1 = _state.value.number1.toDoubleOrNull()
         val number2 = _state.value.number2.toDoubleOrNull()
         var result: Double? = null
@@ -53,6 +89,7 @@ class CalculatorViewModel: ViewModel() {
                 is CalculatorOperation.Subtraction -> result = number1 - number2
                 is CalculatorOperation.Multiply -> result = number1 * number2
                 is CalculatorOperation.Divide -> result = number1 / number2
+                is CalculatorOperation.Exponent -> result = number1.pow(number2)
                 null -> return
             }
             _state.value = _state.value.copy(
@@ -67,59 +104,81 @@ class CalculatorViewModel: ViewModel() {
             Log.d("deb", _state.value.operation.toString())
 
         }
+        */
+
 
 
 
     }
 
-    private fun enterOperation(operation: CalculatorOperation) {
-        if(_state.value.number1.isNotBlank()) {
-            _state.value = _state.value.copy(operation = operation)
+    private fun getNumbers(indexChar: Int): MutableList<Int> {
+        val numbers = mutableListOf(0,_state.value.expression.length)
+        var index: Int = 0
+        for (i in indexChar downTo 0){
+            if (!_state.value.expression[i].isDigit() &&  _state.value.expression[i] != '.'){
+                index=i
+                break
+            }
+        }
+        numbers[0] = index+1
+
+        index = _state.value.expression.length
+        for (i in indexChar.._state.value.expression.length){
+            if (!_state.value.expression[i].isDigit() &&  _state.value.expression[i] != '.'){
+                index=i
+                break
+            }
+        }
+        numbers[1] = index
+        return(numbers)
+    }
+
+    private fun getResult(n1: Double, n2: Double, op: Char): Double {
+        val result: Double = when (op) {
+            '+' -> n1 + n2
+            '-' -> n1 - n2
+            '*' -> n1 * n2
+            '/' -> n1 / n2
+            '^' -> n1.pow(n2)
+            else -> return 0.0
+        }
+        return result
+    }
+
+    private fun isDouble(str: String): Boolean {
+        return try {
+            str.toDouble()
+            true
+        } catch (e: NumberFormatException) {
+            false
         }
     }
+
+
 
     private fun enterDecimal() {
-        if (_state.value.operation == null && !_state.value.number1.contains(".") && _state.value.number1.isNotBlank()){
-            _state.value = _state.value.copy(
-                number1 = _state.value.number1 +"."
-            )
-            return
-        }
-        if (_state.value.operation == null && _state.value.number2.isBlank()){
-            _state.value = _state.value.copy(
-                number1 = "0."
-            )
-            return
-        }
-        if (!_state.value.number2.contains(".") && _state.value.number2.isNotBlank()){
-            _state.value = _state.value.copy(
-                number2 = _state.value.number2 +"."
-            )
-            return
-        }
-        if (_state.value.number2.isBlank()){
-            _state.value = _state.value.copy(
-                number2 = "0."
-            )
-            return
+        if (_state.value.expression.last().isDigit()){
+            var find: Boolean = false
+            for (i in _state.value.expression.length downTo 0){
+                if (_state.value.expression[i] == '.'){
+                    find = true
+                    break
+                }
+                if (!_state.value.expression[i].isDigit()){
+                    break
+                }
+            }
+            if (!find){
+                _state.value = _state.value.copy(
+                    expression = _state.value.expression + "."
+                )
+            }
         }
     }
 
-    private fun enterNumber(number: Int) {
-        if (_state.value.operation == null) {
-            if (_state.value.number1.length >= MAX_NUM_LENGHT){
-                return
-            }
-            _state.value = _state.value.copy(
-                number1 = _state.value.number1 + number.toString()
-            )
-            return
-        }
-        if (_state.value.number2.length >= MAX_NUM_LENGHT){
-            return
-        }
+    private fun enterChar(c: Char) {
         _state.value = _state.value.copy(
-            number2 = _state.value.number2 + number
+            expression = _state.value.expression + c
         )
     }
 
