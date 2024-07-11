@@ -1,7 +1,7 @@
 package com.example.android_calculator
 
 data class CalculatorState(
-    val number1: String = "",
-    val number2: String="",
-    val operation: CalculatorOperation? = null
+    var number1: String = "",
+    var number2: String = "",
+    var operation: CalculatorOperation? = null
 )

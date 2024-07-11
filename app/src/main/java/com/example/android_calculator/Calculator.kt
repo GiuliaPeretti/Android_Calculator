@@ -1,15 +1,19 @@
 package com.example.android_calculator
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,19 +25,23 @@ import androidx.compose.ui.unit.sp
 import com.example.android_calculator.ui.theme.brightPink
 import com.example.android_calculator.ui.theme.darkPink
 import com.example.android_calculator.ui.theme.lightPink
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun Calculator(
-    state: CalculatorState,
+    stateFlow: StateFlow<CalculatorState>,
     buttonSpacing: Dp = 8.dp,
     modifier: Modifier = Modifier,
-    onAction: (CalculatorAction) -> Unit
+    onAction: (CalculatorAction) -> Unit,
+    viewModel: CalculatorViewModel
 ) {
+    val state by viewModel.state.collectAsState()
     Box(modifier = Modifier){
         Column (
 
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
+                .background(Color.Black)
                 .align(Alignment.BottomCenter),
             verticalArrangement = Arrangement.spacedBy(buttonSpacing)
         ) {
@@ -48,6 +56,11 @@ fun Calculator(
                 color = Color.White,
                 maxLines = 2
             )
+            Log.d("deb", "Calculator")
+            Log.d("deb", state.number1)
+            Log.d("deb", state.number2)
+            Log.d("deb", state.operation?.symbol ?: "")
+            Log.d("deb", state.number1 + (state.operation?.symbol ?: "") + state.number2)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -83,21 +96,21 @@ fun Calculator(
         ){
             CalculatorButton(   symbol = "7",
                 modifier = Modifier
-                    .background(lightPink)
+                    .background(darkPink)
                     .aspectRatio(1f)
                     .weight(1f),
                 onclick = {onAction(CalculatorAction.Number(7))}
             )
             CalculatorButton(   symbol = "8",
                 modifier = Modifier
-                    .background(lightPink)
+                    .background(darkPink)
                     .aspectRatio(1f)
                     .weight(1f),
                 onclick = {onAction(CalculatorAction.Number(8))}
             )
             CalculatorButton(   symbol = "9",
                 modifier = Modifier
-                    .background(lightPink)
+                    .background(darkPink)
                     .aspectRatio(1f)
                     .weight(1f),
                 onclick = {onAction(CalculatorAction.Number(9))}
@@ -118,21 +131,21 @@ fun Calculator(
             ){
                 CalculatorButton(   symbol = "4",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Number(4))}
                 )
                 CalculatorButton(   symbol = "5",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Number(5))}
                 )
                 CalculatorButton(   symbol = "6",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Number(6))}
@@ -153,21 +166,21 @@ fun Calculator(
             ){
                 CalculatorButton(   symbol = "1",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Number(1))}
                 )
                 CalculatorButton(   symbol = "2",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Number(2))}
                 )
                 CalculatorButton(   symbol = "3",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Number(3))}
@@ -188,14 +201,14 @@ fun Calculator(
             ){
                 CalculatorButton(   symbol = "0",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(2f)
                         .weight(2f),
                     onclick = {onAction(CalculatorAction.Number(0))}
                 )
                 CalculatorButton(   symbol = ".",
                     modifier = Modifier
-                        .background(lightPink)
+                        .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Decimal)}

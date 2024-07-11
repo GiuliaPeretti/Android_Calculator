@@ -24,17 +24,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Android_calculatorTheme {
-                val viewModel = viewModels<CalculatorViewModel>()
+                val viewModel = CalculatorViewModel()
                 val state = viewModel.state
                 val buttonSpacing = 8.dp
                 Calculator(
-                    state = state,
+                    stateFlow = state,
                     onAction = viewModel::onAction,
                     buttonSpacing = buttonSpacing,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Black)
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    viewModel = viewModel
                 )
              }
         }
