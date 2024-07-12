@@ -1,5 +1,6 @@
 package com.example.android_calculator
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,98 +33,91 @@ class CalculatorViewModel: ViewModel() {
 
     private fun performOperation() {
         while(!isDouble(_state.value.expression)) {
-            if (_state.value.expression.contains("*", ignoreCase = true)
+            Log.d("deb", "while")
+            Log.d("deb", _state.value.expression)
+
+            if (_state.value.expression.contains("x", ignoreCase = true)
                 || _state.value.expression.contains("/", ignoreCase = true)
                 || _state.value.expression.contains("^", ignoreCase = true)
             ) {
-                for (i in 1.._state.value.expression.length) {
-                    if (_state.value.expression[i] == '*' || _state.value.expression[i] == '/' || _state.value.expression[i] == '^') {
-                        val indexNumbers = getNumbers(i)
-                        val n1: Double =
-                            _state.value.expression.substring(indexNumbers[0], i).toDouble()
-                        val n2: Double =
-                            _state.value.expression.substring(i + 1, indexNumbers[1]).toDouble()
-                        val result: Double = getResult(n1, n2, _state.value.expression[i])
+                Log.d("deb", "entra x")
+                for (i in 0 until _state.value.expression.length) {
+                    if (_state.value.expression[i] == 'x' || _state.value.expression[i] == '/' || _state.value.expression[i] == '^') {
                         _state.value = _state.value.copy(
-                            expression = _state.value.expression.substring(
-                                0,
-                                indexNumbers[0]
-                            ) + result.toString() + _state.value.expression.substring(
-                                indexNumbers[1],
-                                _state.value.expression.length
-                            )
+                            expression = doOperation(exp= _state.value.expression, i= i)
                         )
+                        break
                     }
                 }
-            }
-            else{
-                for (i in 1.._state.value.expression.length) {
+            } else{
+                Log.d("deb", "entra + -")
+                for (i in 0 until _state.value.expression.length) {
                     if (_state.value.expression[i] == '+' || _state.value.expression[i] == '-') {
-                        val indexNumbers = getNumbers(i)
-                        val n1: Double =
-                            _state.value.expression.substring(indexNumbers[0], i).toDouble()
-                        val n2: Double =
-                            _state.value.expression.substring(i + 1, indexNumbers[1]).toDouble()
-                        val result: Double = getResult(n1, n2, _state.value.expression[i])
                         _state.value = _state.value.copy(
-                            expression = _state.value.expression.substring(
-                                0,
-                                indexNumbers[0]
-                            ) + result.toString() + _state.value.expression.substring(
-                                indexNumbers[1],
-                                _state.value.expression.length
+                            expression = doOperation(exp= _state.value.expression, i= i)
                             )
-                        )
+                        break
                     }
                 }
             }
         }
+    }
 
-        /*
-        val number1 = _state.value.number1.toDoubleOrNull()
-        val number2 = _state.value.number2.toDoubleOrNull()
-        var result: Double? = null
-        if (number1 != null && number2 != null) {
-            when (_state.value.operation) {
-                is CalculatorOperation.Add -> result = number1 + number2
-                is CalculatorOperation.Subtraction -> result = number1 - number2
-                is CalculatorOperation.Multiply -> result = number1 * number2
-                is CalculatorOperation.Divide -> result = number1 / number2
-                is CalculatorOperation.Exponent -> result = number1.pow(number2)
-                null -> return
-            }
-            _state.value = _state.value.copy(
-                number1 = result.toString().take(15),
-                number2 = "",
-                operation = null
-            )
-            Log.d("deb", "result:")
-            Log.d("deb", result.toString())
-            Log.d("deb", (number1).toString())
-            Log.d("deb", (number2).toString())
-            Log.d("deb", _state.value.operation.toString())
+    private fun doOperation(exp: String, i: Int): String {
+        val indexNumbers = getNumbers(i)
+        Log.d("deb", indexNumbers.toString())
 
+        Log.d("deb",exp.substring(indexNumbers[0], i))
+        val n1: Double =
+            exp.substring(indexNumbers[0], i).toDouble()
+
+
+
+        var n2: Double
+        if(indexNumbers[1]== exp.length-1){
+            n2 =
+                exp.substring(i + 1, indexNumbers[1]+1).toDouble()
+            Log.d("deb", n2.toString())
+        } else {
+            n2 =
+                exp.substring(i + 1, indexNumbers[1]).toDouble()
+            Log.d("deb", n2.toString())
         }
-        */
 
+        val result: Double = getResult(n1, n2, exp[i])
+        Log.d("deb", result.toString())
 
+        Log.d("deb", exp.substring(indexNumbers[1]+1, exp.length))
+        Log.d("deb", exp.substring(0, indexNumbers[0])
+                + result.toString()
+                + exp.substring(indexNumbers[1], exp.length))
 
+        return if(indexNumbers[1]== exp.length-1) {
+            (exp.substring(0, indexNumbers[0])
+                    + result.toString()
+                    + exp.substring(indexNumbers[1]+1, _state.value.expression.length) )
+
+        }else {
+            (exp.substring(0, indexNumbers[0])
+                    + result.toString()
+                    + exp.substring(indexNumbers[1], _state.value.expression.length))
+        }
 
     }
 
     private fun getNumbers(indexChar: Int): MutableList<Int> {
-        val numbers = mutableListOf(0,_state.value.expression.length)
+        val numbers = mutableListOf(0,_state.value.expression.length-1)
         var index: Int = 0
-        for (i in indexChar downTo 0){
+        for (i in indexChar-1 downTo 0){
             if (!_state.value.expression[i].isDigit() &&  _state.value.expression[i] != '.'){
-                index=i
+                index=i+1
                 break
             }
         }
-        numbers[0] = index+1
+        numbers[0] = index
 
-        index = _state.value.expression.length
-        for (i in indexChar.._state.value.expression.length){
+        index = _state.value.expression.length-1
+        for (i in indexChar+1 until _state.value.expression.length){
             if (!_state.value.expression[i].isDigit() &&  _state.value.expression[i] != '.'){
                 index=i
                 break
@@ -137,7 +131,7 @@ class CalculatorViewModel: ViewModel() {
         val result: Double = when (op) {
             '+' -> n1 + n2
             '-' -> n1 - n2
-            '*' -> n1 * n2
+            'x' -> n1 * n2
             '/' -> n1 / n2
             '^' -> n1.pow(n2)
             else -> return 0.0
