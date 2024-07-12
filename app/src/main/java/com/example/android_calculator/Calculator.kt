@@ -64,19 +64,26 @@ fun Calculator(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
         ){
-            CalculatorButton(   symbol = "AC",
-                                modifier = Modifier
-                                    .background(lightPink)
-                                    .aspectRatio(1f)
-                                    .weight(1f),
-                onclick = {onAction(CalculatorAction.Clear)}
-            )
             CalculatorButton(   symbol = "Del",
                 modifier = Modifier
                     .background(lightPink)
                     .aspectRatio(1f)
                     .weight(1f),
                 onclick = {onAction(CalculatorAction.Delete)}
+            )
+            CalculatorButton(   symbol = "(",
+                modifier = Modifier
+                    .background(lightPink)
+                    .aspectRatio(1f)
+                    .weight(1f),
+                onclick = {onAction(CalculatorAction.Character('('))}
+            )
+            CalculatorButton(   symbol = ")",
+                modifier = Modifier
+                    .background(lightPink)
+                    .aspectRatio(1f)
+                    .weight(1f),
+                onclick = {onAction(CalculatorAction.Character(')'))}
             )
             CalculatorButton(   symbol = "^",
                 modifier = Modifier
@@ -85,13 +92,7 @@ fun Calculator(
                     .weight(1f),
                 onclick = {onAction(CalculatorAction.Character('^'))}
             )
-            CalculatorButton(   symbol = "/",
-                modifier = Modifier
-                    .background(brightPink)
-                    .aspectRatio(1f)
-                    .weight(1f),
-                onclick = {onAction(CalculatorAction.Character('/'))}
-            )
+
         }
 
 
@@ -120,14 +121,15 @@ fun Calculator(
                     .weight(1f),
                 onclick = {onAction(CalculatorAction.Character('9'))}
             )
-
-            CalculatorButton(   symbol = "x",
+            CalculatorButton(   symbol = "/",
                 modifier = Modifier
                     .background(brightPink)
                     .aspectRatio(1f)
                     .weight(1f),
-                onclick = {onAction(CalculatorAction.Character('x'))}
+                onclick = {onAction(CalculatorAction.Character('/'))}
             )
+
+
         }
 
         Row(
@@ -155,14 +157,15 @@ fun Calculator(
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Character('6'))}
                 )
-
-                CalculatorButton(   symbol = "-",
+                CalculatorButton(   symbol = "x",
                     modifier = Modifier
                         .background(brightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.Character('-'))}
+                    onclick = {onAction(CalculatorAction.Character('x'))}
                 )
+
+
             }
 
             Row(
@@ -190,14 +193,14 @@ fun Calculator(
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Character('3'))}
                 )
-
-                CalculatorButton(   symbol = "+",
+                CalculatorButton(   symbol = "-",
                     modifier = Modifier
                         .background(brightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.Character('+'))}
+                    onclick = {onAction(CalculatorAction.Character('-'))}
                 )
+
             }
 
             Row(
@@ -207,8 +210,8 @@ fun Calculator(
                 CalculatorButton(   symbol = "0",
                     modifier = Modifier
                         .background(darkPink)
-                        .aspectRatio(2f)
-                        .weight(2f),
+                        .aspectRatio(1f)
+                        .weight(1f),
                     onclick = {onAction(CalculatorAction.Character('0'))}
                 )
                 CalculatorButton(   symbol = ".",
@@ -220,10 +223,17 @@ fun Calculator(
                 )
                 CalculatorButton(   symbol = "=",
                     modifier = Modifier
-                        .background(brightPink)
+                        .background(lightPink)
                         .aspectRatio(1f)
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Calculate)}
+                )
+                CalculatorButton(   symbol = "+",
+                    modifier = Modifier
+                        .background(brightPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.Character('+'))}
                 )
             }
 
