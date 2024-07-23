@@ -89,7 +89,7 @@ class CalculatorViewModel: ViewModel() {
         Log.d("deb", exp.substring(indexNumbers[1] + 1, exp.length))
 
 
-        return result.toString()
+        return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
 
     }
 
@@ -122,7 +122,7 @@ class CalculatorViewModel: ViewModel() {
             '-' -> n1 - n2
             'x' -> n1 * n2
             '/' -> n1 / n2
-            '^' -> n1.pow(n2)
+            '^' -> n1.times(n2)
             else -> return 0.0
         }
         return result
@@ -170,7 +170,7 @@ class CalculatorViewModel: ViewModel() {
                 }else if(pos1 - 1 != -1 && pos2 + 1 != text.length && isDouble(text.substring( pos1 - 1,pos1)) && isDouble(text.substring(pos2 + 1,pos2+2))) {
                     text = text.substring(0,pos1)+"x"+(num)+'x'+text.substring(pos2+1,text.length)
                 }else {
-                    text = text.substring(0,pos1)+(num).toString()+text.substring(pos2+1,text.length)
+                    text = text.substring(0,pos1)+(num)+text.substring(pos2+1,text.length)
                 }
             }
             else {
