@@ -107,7 +107,7 @@ class CalculatorViewModel: ViewModel() {
 
         index = text.length - 1
         for (i in indexChar + 1 until text.length) {
-            if (text[i].isDigit() && text[i] != '.') {
+            if (!text[i].isDigit() && text[i] != '.') {
                 index = i
                 break
             }
@@ -147,9 +147,9 @@ class CalculatorViewModel: ViewModel() {
 
     private fun CalculateResult(t: String) {
         var text: String = t
-        if (text[0] == '(' && text[text.length - 1] == ')') {
+        /*if (text[0] == '(' && text[text.length - 1] == ')') {
             text = text.substring(1, text.length - 1)
-        }
+        }*/
         while ('(' in text) {
             Log.d("deb", "entra in (")
             val list: MutableList<Int> = insidePar(text)
@@ -160,7 +160,7 @@ class CalculatorViewModel: ViewModel() {
                 Log.d("deb", "dentro la parentesi è num")
                 num = text.substring( pos1 + 1,pos2)
                 if (pos1 - 1 != -1 && isDouble(text.substring( pos1 - 1,pos1))) {
-                    if (pos2 + 1 == text.length - 1) {
+                    if (pos2  == text.length - 1) {
                         text = text.substring(0, pos1) + "x" + (num)
                     } else {
                         text = text.substring(0, pos1) + "x" + (num) + text.substring(pos2 + 1, text.length)
