@@ -31,12 +31,10 @@ class CalculatorViewModel: ViewModel() {
         )
     }
 
-
-
     private fun performOperation(exp:String): String {
         var expression: String = exp
-        while (!isDouble(expression)) {
 
+        while (!isDouble(expression)) {
             Log.d("deb", "while")
             Log.d("deb", expression)
 
@@ -47,9 +45,7 @@ class CalculatorViewModel: ViewModel() {
                 Log.d("deb", "entra x")
                 for (i in expression.indices) {
                     if (expression[i] == 'x' || expression[i] == '/' || expression[i] == '^') {
-                        _state.value = _state.value.copy(
-                            expression = doOperation(exp = expression, i = i)
-                        )
+                        expression = doOperation(exp = expression, i = i)
                         break
                     }
                 }
@@ -57,9 +53,7 @@ class CalculatorViewModel: ViewModel() {
                 Log.d("deb", "entra + -")
                 for (i in expression.indices) {
                     if (expression[i] == '+' || expression[i] == '-') {
-                        _state.value = _state.value.copy(
-                            expression = doOperation(exp = expression, i = i)
-                        )
+                        expression = doOperation(exp = expression, i = i)
                         break
                     }
                 }
@@ -96,13 +90,13 @@ class CalculatorViewModel: ViewModel() {
         Log.d(
             "deb", exp.substring(0, indexNumbers[0])
                     + result.toString()
-                    + exp.substring(indexNumbers[1], exp.length)
+                    + exp.substring(indexNumbers[1]+1, exp.length-1)
         )
 
-        return if (indexNumbers[1] == exp.length - 1) {
+        return if (indexNumbers[1]+1 <= exp.length - 1) {
             (exp.substring(0, indexNumbers[0])
                     + result.toString()
-                    + exp.substring(indexNumbers[1] + 1, exp.length))
+                    + exp.substring(indexNumbers[1] + 1, exp.length-1))
 
         } else {
             (exp.substring(0, indexNumbers[0])
@@ -169,6 +163,7 @@ class CalculatorViewModel: ViewModel() {
             text = text.substring(1, text.length - 1)
         }
         while ('(' in text) {
+            Log.d("deb", "entra in (")
             val list: MutableList<Int> = insidePar(text)
             val pos1 = list[0]
             val pos2 = list[1]
@@ -177,11 +172,11 @@ class CalculatorViewModel: ViewModel() {
                 Log.d("deb", "dentro la parentesi è num")
                 num = text.substring( pos1 + 1,pos2).toDouble()
                 if (pos1 - 1 != -1 && isDouble(text.substring( pos1 - 1,pos1))) {
-                    text = text.substring(0,pos1)+"*"+(num).toString()+text.substring( pos2+1,text.length)
+                    text = text.substring(0,pos1)+"x"+(num).toString()+text.substring( pos2+1,text.length)
                 }else if(pos2 + 1 != text.length && isDouble(text.substring(pos2 + 1,pos2+2))) {
-                    text = text.substring(0,pos1)+num.toString()+'*'+text.substring(pos2+1,text.length)
+                    text = text.substring(0,pos1)+num.toString()+'x'+text.substring(pos2+1,text.length)
                 }else if(pos1 - 1 != -1 && pos2 + 1 != text.length && isDouble(text.substring( pos1 - 1,pos1)) && isDouble(text.substring(pos2 + 1,pos2+2))) {
-                    text = text.substring(0,pos1)+"*"+(num).toString()+'*'+text.substring(pos2+1,text.length)
+                    text = text.substring(0,pos1)+"x"+(num).toString()+'x'+text.substring(pos2+1,text.length)
                 }else {
                     text = text.substring(0,pos1)+(num).toString()+text.substring(pos2+1,text.length)
                 }
@@ -192,6 +187,7 @@ class CalculatorViewModel: ViewModel() {
                 text=text.substring(0,pos1)+r+text.substring(pos2+1,text.length)
             }
         }
+
         val r=performOperation(text)
         _state.value = _state.value.copy(
             expression = r
@@ -202,7 +198,7 @@ class CalculatorViewModel: ViewModel() {
 
     private fun insidePar(t: String): MutableList<Int> { //(34(23*2)3(23))
         var text: String = t
-        var l = mutableListOf<Int>(text.indexOf('('),text.lastIndexOf((')')))
+        var l = mutableListOf<Int>(text.indexOf('('),text.indexOf((')')))
         text=text.substring(l[0]+1,text.indexOf(')'))
         while('(' in text) {
             l[0] = text.indexOf('(')
