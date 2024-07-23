@@ -89,16 +89,7 @@ class CalculatorViewModel: ViewModel() {
         Log.d("deb", exp.substring(indexNumbers[1] + 1, exp.length))
 
 
-        return if (indexNumbers[1]+1 <= exp.length - 1) {
-            (exp.substring(0, indexNumbers[0])
-                    + result.toString()
-                    + exp.substring(indexNumbers[1] + 1, exp.length-1))
-
-        } else {
-            (exp.substring(0, indexNumbers[0])
-                    + result.toString()
-                    + exp.substring(indexNumbers[1], exp.length))
-        }
+        return result.toString()
 
     }
 
@@ -164,16 +155,20 @@ class CalculatorViewModel: ViewModel() {
             val list: MutableList<Int> = insidePar(text)
             val pos1 = list[0]
             val pos2 = list[1]
-            var num: Double
+            var num: String
             if (isDouble(text.substring( pos1 + 1,pos2))) {
                 Log.d("deb", "dentro la parentesi è num")
-                num = text.substring( pos1 + 1,pos2).toDouble()
+                num = text.substring( pos1 + 1,pos2)
                 if (pos1 - 1 != -1 && isDouble(text.substring( pos1 - 1,pos1))) {
-                    text = text.substring(0,pos1)+"x"+(num).toString()+text.substring( pos2+1,text.length)
+                    if (pos2 + 1 == text.length - 1) {
+                        text = text.substring(0, pos1) + "x" + (num)
+                    } else {
+                        text = text.substring(0, pos1) + "x" + (num) + text.substring(pos2 + 1, text.length)
+                    }
                 }else if(pos2 + 1 != text.length && isDouble(text.substring(pos2 + 1,pos2+2))) {
-                    text = text.substring(0,pos1)+num.toString()+'x'+text.substring(pos2+1,text.length)
+                    text = text.substring(0, pos1) + num + 'x' + text.substring(pos2 + 1, text.length)
                 }else if(pos1 - 1 != -1 && pos2 + 1 != text.length && isDouble(text.substring( pos1 - 1,pos1)) && isDouble(text.substring(pos2 + 1,pos2+2))) {
-                    text = text.substring(0,pos1)+"x"+(num).toString()+'x'+text.substring(pos2+1,text.length)
+                    text = text.substring(0,pos1)+"x"+(num)+'x'+text.substring(pos2+1,text.length)
                 }else {
                     text = text.substring(0,pos1)+(num).toString()+text.substring(pos2+1,text.length)
                 }
@@ -183,7 +178,7 @@ class CalculatorViewModel: ViewModel() {
                 val te=text.substring(pos1+1,pos2)
                 Log.d("deb", te)
                 val r=performOperation(te)
-                text=text.substring(0,pos1)+r+text.substring(pos2+1,text.length)
+                text=text.substring(0,pos1+1)+r+text.substring(pos2,text.length)
             }
         }
 
