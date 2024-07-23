@@ -63,7 +63,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun doOperation(exp: String, i: Int): String {
-        val indexNumbers = getNumbers(i)
+        val indexNumbers = getNumbers(i, exp)
         Log.d("deb", indexNumbers.toString())
 
         Log.d("deb", exp.substring(indexNumbers[0], i))
@@ -87,11 +87,7 @@ class CalculatorViewModel: ViewModel() {
         Log.d("deb", result.toString())
 
         Log.d("deb", exp.substring(indexNumbers[1] + 1, exp.length))
-        Log.d(
-            "deb", exp.substring(0, indexNumbers[0])
-                    + result.toString()
-                    + exp.substring(indexNumbers[1]+1, exp.length-1)
-        )
+
 
         return if (indexNumbers[1]+1 <= exp.length - 1) {
             (exp.substring(0, indexNumbers[0])
@@ -106,20 +102,21 @@ class CalculatorViewModel: ViewModel() {
 
     }
 
-    private fun getNumbers(indexChar: Int): MutableList<Int> {
-        val numbers = mutableListOf(0, _state.value.expression.length - 1)
+    private fun getNumbers(indexChar: Int, t: String): MutableList<Int> {
+        var text: String = t
+        val numbers = mutableListOf(0, text.length - 1)
         var index: Int = 0
         for (i in indexChar - 1 downTo 0) {
-            if (!_state.value.expression[i].isDigit() && _state.value.expression[i] != '.') {
+            if (!text[i].isDigit() && text[i] != '.') {
                 index = i + 1
                 break
             }
         }
         numbers[0] = index
 
-        index = _state.value.expression.length - 1
-        for (i in indexChar + 1 until _state.value.expression.length) {
-            if (!_state.value.expression[i].isDigit() && _state.value.expression[i] != '.') {
+        index = text.length - 1
+        for (i in indexChar + 1 until text.length) {
+            if (text[i].isDigit() && text[i] != '.') {
                 index = i
                 break
             }
@@ -182,7 +179,9 @@ class CalculatorViewModel: ViewModel() {
                 }
             }
             else {
+                Log.d("deb", text)
                 val te=text.substring(pos1+1,pos2)
+                Log.d("deb", te)
                 val r=performOperation(te)
                 text=text.substring(0,pos1)+r+text.substring(pos2+1,text.length)
             }
