@@ -38,7 +38,18 @@ class CalculatorViewModel: ViewModel() {
             Log.d("deb", "while")
             Log.d("deb", expression)
 
-            if (expression.contains("x", ignoreCase = true)
+
+
+            if (expression.contains("^", ignoreCase = true)
+            ) {
+                Log.d("deb", "entra ^")
+                for (i in expression.indices) {
+                    if (expression[i] == '^') {
+                        expression = doOperation(exp = expression, i = i)
+                        break
+                    }
+                }
+            } else if (expression.contains("x", ignoreCase = true)
                 || expression.contains("/", ignoreCase = true)
                 || expression.contains("^", ignoreCase = true)
             ) {
@@ -137,6 +148,16 @@ class CalculatorViewModel: ViewModel() {
         }
     }
 
+    private fun isDouble(str: Char): Boolean {
+        val str: String = str.toString()
+        return try {
+            str.toDouble()
+            true
+        } catch (e: NumberFormatException) {
+            false
+        }
+    }
+
     private fun isInt(n: Double): Boolean {
         if (n - n.toInt() > 0) {
             return (true)
@@ -159,16 +180,22 @@ class CalculatorViewModel: ViewModel() {
             if (isDouble(text.substring( pos1 + 1,pos2))) {
                 Log.d("deb", "dentro la parentesi è num")
                 num = text.substring( pos1 + 1,pos2)
-                if (pos1 - 1 != -1 && isDouble(text.substring( pos1 - 1,pos1))) {
+
+                if(pos1 - 1 != -1 && pos2 + 1 != text.length
+                    && (isDouble(text[pos1]) || text[pos1].equals('(') || text[pos1].equals(')')  )
+                    && (isDouble(text[pos2]) || text[pos2].equals('(') || text[pos2].equals(')')  )
+                    )
+                {
+                    text = text.substring(0, pos1) + "x" + (num) + 'x' + text.substring(pos2 + 1, text.length)
+
+                }else if (pos1 - 1 != -1 && (isDouble(text.substring( pos1 - 1,pos1)) || text.substring( pos1 - 1,pos1).equals('(') || text.substring( pos1 - 1,pos1).equals(')') )) {
                     if (pos2  == text.length - 1) {
                         text = text.substring(0, pos1) + "x" + (num)
                     } else {
                         text = text.substring(0, pos1) + "x" + (num) + text.substring(pos2 + 1, text.length)
                     }
-                }else if(pos2 + 1 != text.length && isDouble(text.substring(pos2 + 1,pos2+2))) {
+                }else if(pos2 + 1 != text.length && (isDouble(text.substring(pos2 + 1,pos2+2)) || text.substring(pos2 + 1,pos2+2).equals('(') || text.substring(pos2 + 1,pos2+2).equals(')'))      ) {
                     text = text.substring(0, pos1) + num + 'x' + text.substring(pos2 + 1, text.length)
-                }else if(pos1 - 1 != -1 && pos2 + 1 != text.length && isDouble(text.substring( pos1 - 1,pos1)) && isDouble(text.substring(pos2 + 1,pos2+2))) {
-                    text = text.substring(0,pos1)+"x"+(num)+'x'+text.substring(pos2+1,text.length)
                 }else {
                     text = text.substring(0,pos1)+(num)+text.substring(pos2+1,text.length)
                 }
