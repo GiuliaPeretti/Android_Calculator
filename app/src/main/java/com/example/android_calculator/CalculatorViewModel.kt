@@ -98,8 +98,8 @@ class CalculatorViewModel: ViewModel() {
 
         Log.d("deb", exp.substring(indexNumbers[1] + 1, exp.length))
 
-
-        return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
+        //TODO: errore qua giu, penso che il vero problema sia in getNumbers
+        return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1],exp.length)
 
     }
 
