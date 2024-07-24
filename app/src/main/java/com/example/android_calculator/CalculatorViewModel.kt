@@ -36,6 +36,9 @@ class CalculatorViewModel: ViewModel() {
     private fun performOperation(exp:String): String {
         var expression: String = exp
         while (!isDouble(expression)) {
+            if (expression in errorList){
+                return(expression)
+            }
             if (expression.contains("^", ignoreCase = true)
             ) {
                 for (i in expression.indices) {
@@ -84,6 +87,9 @@ class CalculatorViewModel: ViewModel() {
             Log.d("deb", n2.toString())
         }
          */
+        if(n2==0.0 && exp[i]=='/'){
+            return errorList[1]
+        }
         val result: Double = getResult(n1, n2, exp[i])
         //TODO("check if result is int")
         //TODO: errore qua giu, penso che il vero problema sia in getNumbers
@@ -162,6 +168,9 @@ class CalculatorViewModel: ViewModel() {
     private fun CalculateResult(t: String) {
         var text: String = t
         clearError()
+        if (_state.value.expression.isEmpty()){
+            return
+        }
         if (!isValid(text)){
             _state.value = _state.value.copy(
                 expression = errorList[0]
@@ -207,7 +216,11 @@ class CalculatorViewModel: ViewModel() {
                 val te=text.substring(pos1+1,pos2)
                 Log.d("deb", te)
                 val r=performOperation(te)
-                text=text.substring(0,pos1+1)+r+text.substring(pos2,text.length)
+                if (r in errorList){
+                    text=r
+                }else{
+                    text=text.substring(0,pos1+1)+r+text.substring(pos2,text.length)
+                }
             }
         }
 
@@ -225,7 +238,7 @@ class CalculatorViewModel: ViewModel() {
         var pos2=text.indexOf(')')
         val l = mutableListOf<Int>(text.indexOf('('),text.indexOf(')'))
         text=text.substring(0,l[0])+'['+text.substring(l[0]+1,l[1])+']'+text.substring(l[1]+1,text.length)
-        while('(' in text) {
+        while('(' in text.substring(0,l[1])) {
             pos1=text.indexOf('(')
             l[0] = text.indexOf('(')
             text = text.substring(0,l[0])+'['+text.substring(l[0]+1,text.length)
