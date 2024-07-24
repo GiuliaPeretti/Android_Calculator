@@ -1,6 +1,7 @@
 package com.example.android_calculator
 
 import android.util.Log
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun performeDelete() {
+        clearError()
         _state.value = _state.value.copy(
             expression = _state.value.expression.dropLast(1)
         )
@@ -159,7 +161,15 @@ class CalculatorViewModel: ViewModel() {
 
     private fun CalculateResult(t: String) {
         var text: String = t
+        clearError()
+        if (!isValid(text)){
+            _state.value = _state.value.copy(
+                expression = errorList[0]
+            )
+            return
+        }
         while ('(' in text) {
+            //TODO: togli ()
             Log.d("deb", "entra in (")
             val list: MutableList<Int> = insidePar(text)
             val pos1 = list[0]
@@ -218,13 +228,52 @@ class CalculatorViewModel: ViewModel() {
         while('(' in text) {
             pos1=text.indexOf('(')
             l[0] = text.indexOf('(')
-            text = text.substring(l[0] + 1, text.length)
+            text = text.substring(0,l[0])+'['+text.substring(l[0]+1,text.length)
         }
         return(l)
     }
     //private fun resolveBrackets
 
+    private fun isValid(t: String): Boolean{
+        var countPar = 0
+        if (isOperator(t[0]) || isOperator(t[t.length-1])){
+            return false
+        }
+        var op = false
+        for (i in t){
+            op = if (isOperator(i)){
+                if (op){
+                    return false
+                }else{
+                    true
+                }
+            }else{
+                false
+            }
+            if (i=='(') {
+                countPar += 1
+            } else if(i==')'){
+                countPar -= 1
+            }
+            if(countPar<0){
+                return false
+            }
+        }
+        if (countPar!=0){
+            return false
+        }
+        return true
+    }
+
+    private fun isOperator(c: Char): Boolean{
+        if (c=='+' || c=='-' || c=='x' || c=='/' || c=='^'){
+            return true
+        }
+        return false
+    }
+
     private fun enterDecimal() {
+        clearError()
         if (_state.value.expression.last().isDigit()){
             var find: Boolean = false
             for (i in _state.value.expression.length downTo 0){
@@ -245,15 +294,23 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterChar(c: Char) {
+        clearError()
         _state.value = _state.value.copy(
             expression = _state.value.expression + c
         )
     }
 
-    companion object {
-        private const val MAX_NUM_LENGHT=8
+    private fun clearError(){
+        if (_state.value.expression in errorList){
+            _state.value = _state.value.copy(
+                expression = ""
+            )
+        }
     }
 
-
+    companion object {
+        private const val MAX_NUM_LENGHT=8
+        private val errorList = arrayOf("SyntaxError", "divisionByZero")
+    }
 
 }
