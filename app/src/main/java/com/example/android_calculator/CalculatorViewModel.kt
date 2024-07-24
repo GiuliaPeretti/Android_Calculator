@@ -33,16 +33,9 @@ class CalculatorViewModel: ViewModel() {
 
     private fun performOperation(exp:String): String {
         var expression: String = exp
-
         while (!isDouble(expression)) {
-            Log.d("deb", "while")
-            Log.d("deb", expression)
-
-
-
             if (expression.contains("^", ignoreCase = true)
             ) {
-                Log.d("deb", "entra ^")
                 for (i in expression.indices) {
                     if (expression[i] == '^') {
                         expression = doOperation(exp = expression, i = i)
@@ -52,7 +45,6 @@ class CalculatorViewModel: ViewModel() {
             } else if (expression.contains("x", ignoreCase = true)
                 || expression.contains("/", ignoreCase = true)
             ) {
-                Log.d("deb", "entra x")
                 for (i in expression.indices) {
                     if (expression[i] == 'x' || expression[i] == '/' ) {
                         expression = doOperation(exp = expression, i = i)
@@ -60,7 +52,6 @@ class CalculatorViewModel: ViewModel() {
                     }
                 }
             } else {
-                Log.d("deb", "entra + -")
                 for (i in expression.indices) {
                     if (expression[i] == '+' || expression[i] == '-') {
                         expression = doOperation(exp = expression, i = i)
@@ -74,33 +65,34 @@ class CalculatorViewModel: ViewModel() {
 
     private fun doOperation(exp: String, i: Int): String {
         val indexNumbers = getNumbers(i, exp)
-        Log.d("deb", indexNumbers.toString())
 
-        Log.d("deb", exp.substring(indexNumbers[0], i))
         val n1: Double =
             exp.substring(indexNumbers[0], i).toDouble()
 
-
-        var n2: Double
+        val n2: Double =
+            exp.substring(i + 1, indexNumbers[1] + 1).toDouble()
+        /*
         if (indexNumbers[1] == exp.length - 1) {
             n2 =
                 exp.substring(i + 1, indexNumbers[1] + 1).toDouble()
             Log.d("deb", n2.toString())
         } else {
             n2 =
-                exp.substring(i + 1, indexNumbers[1]).toDouble()
+                exp.substring(i + 1, indexNumbers[1]+1).toDouble()
             Log.d("deb", n2.toString())
         }
-
+         */
         val result: Double = getResult(n1, n2, exp[i])
         //TODO("check if result is int")
-        Log.d("deb", result.toString())
-
-        Log.d("deb", exp.substring(indexNumbers[1] + 1, exp.length))
-
         //TODO: errore qua giu, penso che il vero problema sia in getNumbers
-        return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1],exp.length)
-
+        return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
+        /*
+        return if(indexNumbers[1]+1==exp.length-1){
+            exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
+        }else{
+            exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
+        }
+         */
     }
 
     private fun getNumbers(indexChar: Int, t: String): MutableList<Int> {
@@ -116,9 +108,9 @@ class CalculatorViewModel: ViewModel() {
         numbers[0] = index
 
         index = text.length - 1
-        for (i in indexChar + 1 until text.length) {
+        for (i in indexChar + 1 until text.length) {  //2x2x2
             if (!text[i].isDigit() && text[i] != '.') {
-                index = i
+                index = i-1
                 break
             }
         }
@@ -167,9 +159,6 @@ class CalculatorViewModel: ViewModel() {
 
     private fun CalculateResult(t: String) {
         var text: String = t
-        /*if (text[0] == '(' && text[text.length - 1] == ')') {
-            text = text.substring(1, text.length - 1)
-        }*/
         while ('(' in text) {
             Log.d("deb", "entra in (")
             val list: MutableList<Int> = insidePar(text)
@@ -181,19 +170,19 @@ class CalculatorViewModel: ViewModel() {
                 num = text.substring( pos1 + 1,pos2)
 
                 if(pos1 - 1 != -1 && pos2 + 1 != text.length
-                    && (isDouble(text[pos1-1]) || text[pos1-1].equals('(') || text[pos1-1].equals(')')  )
-                    && (isDouble(text[pos2+1]) || text[pos2+1].equals('(') || text[pos2+1].equals(')')  )
+                    && (isDouble(text[pos1-1]) ||text[pos1-1].equals(')')  )
+                    && (isDouble(text[pos2+1]) || text[pos2+1].equals('(')   )
                     )
                 {
                     text = text.substring(0, pos1) + "x" + (num) + 'x' + text.substring(pos2 + 1, text.length)
 
-                }else if (pos1 - 1 != -1 && ( isDouble(text[pos1-1]) || text[pos1-1].equals('(') || text[pos1-1].equals(')') )) {
+                }else if (pos1 - 1 != -1 && ( isDouble(text[pos1-1]) || text[pos1-1].equals(')') )) {
                     if (pos2  == text.length - 1) {
                         text = text.substring(0, pos1) + "x" + (num)
                     } else {
                         text = text.substring(0, pos1) + "x" + (num) + text.substring(pos2 + 1, text.length)
                     }
-                }else if(pos2 + 1 != text.length && (isDouble(text[pos2+1]) || text[pos2+1].equals('(') || text[pos2+1].equals(')')) ) {
+                }else if(pos2 + 1 != text.length && (isDouble(text[pos2+1]) || text[pos2+1].equals('(') ) ) {
                     text = text.substring(0, pos1) + num + 'x' + text.substring(pos2 + 1, text.length)
                 }else {
                     if (pos2+1 == text.length){
@@ -222,9 +211,12 @@ class CalculatorViewModel: ViewModel() {
 
     private fun insidePar(t: String): MutableList<Int> { //(34(23*2)3(23))
         var text: String = t
-        var l = mutableListOf<Int>(text.indexOf('('),text.indexOf((')')))
-        text=text.substring(l[0]+1,text.indexOf(')'))
+        var pos1=text.indexOf('(')
+        var pos2=text.indexOf(')')
+        val l = mutableListOf<Int>(text.indexOf('('),text.indexOf(')'))
+        text=text.substring(0,l[0])+'['+text.substring(l[0]+1,l[1])+']'+text.substring(l[1]+1,text.length)
         while('(' in text) {
+            pos1=text.indexOf('(')
             l[0] = text.indexOf('(')
             text = text.substring(l[0] + 1, text.length)
         }
