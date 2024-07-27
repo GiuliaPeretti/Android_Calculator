@@ -33,19 +33,6 @@ import com.example.android_calculator.ui.theme.darkerPink
 import com.example.android_calculator.ui.theme.lightPink
 import kotlinx.coroutines.flow.StateFlow
 
-/*
-@Composable
-fun SecondScreen(navController: NavHostController) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(onClick = { navController.popBackStack() }) {}// Go back
-        Text("This is the second screen!")
-    }
-}
-*/
 
 @Composable
 fun SecondScreen(
@@ -83,6 +70,7 @@ fun SecondScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 CalculatorButton(   symbol = "lg",
+                    //TODO: fai log
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)
@@ -90,6 +78,7 @@ fun SecondScreen(
                     onclick = {onAction(CalculatorAction.String("log("))}
                 )
                 CalculatorButton(   symbol = "ln",
+                    //TODO: fai ln
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)
@@ -125,6 +114,7 @@ fun SecondScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 CalculatorButton(   symbol = "sin",
+                    //TODO: fai sin
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)
@@ -161,6 +151,7 @@ fun SecondScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 CalculatorButton(   symbol = "cos",
+                    //TODO: fai cos
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)
@@ -204,6 +195,7 @@ fun SecondScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 CalculatorButton(   symbol = "tan",
+                    //TODO: fai tan
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)
@@ -247,6 +239,7 @@ fun SecondScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 CalculatorButton(   symbol = "!",
+                    //TODO: fai fattoriale
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)
@@ -289,6 +282,7 @@ fun SecondScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 CalculatorButton(   symbol = "√",
+                    //TODO: fai radice quadrata
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)

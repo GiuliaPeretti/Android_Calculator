@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 class CalculatorViewModel: ViewModel() {
     private val _state = MutableStateFlow(CalculatorState())
@@ -40,11 +41,22 @@ class CalculatorViewModel: ViewModel() {
             if (expression in errorList){
                 return(expression)
             }
+
             if (expression.contains("^", ignoreCase = true)
+                || expression.contains("√", ignoreCase = true)
+                || expression.contains("!", ignoreCase = true)
             ) {
                 for (i in expression.indices) {
                     if (expression[i] == '^') {
                         expression = doOperation(exp = expression, i = i)
+                        break
+                    }
+                    if (expression[i] == '√') {
+                        expression = squareRoot(exp = expression, indexChar = i)
+                        break
+                    }
+                    if (expression[i] == '!') {
+                        expression = factorial(exp = expression, indexChar = i)
                         break
                     }
                 }
@@ -77,17 +89,7 @@ class CalculatorViewModel: ViewModel() {
 
         val n2: Double =
             exp.substring(i + 1, indexNumbers[1] + 1).toDouble()
-        /*
-        if (indexNumbers[1] == exp.length - 1) {
-            n2 =
-                exp.substring(i + 1, indexNumbers[1] + 1).toDouble()
-            Log.d("deb", n2.toString())
-        } else {
-            n2 =
-                exp.substring(i + 1, indexNumbers[1]+1).toDouble()
-            Log.d("deb", n2.toString())
-        }
-         */
+
         if(n2==0.0 && exp[i]=='/'){
             return errorList[1]
         }
@@ -95,14 +97,51 @@ class CalculatorViewModel: ViewModel() {
         //TODO("check if result is int")
         //TODO: errore qua giu, penso che il vero problema sia in getNumbers
         return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
-        /*
-        return if(indexNumbers[1]+1==exp.length-1){
-            exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
-        }else{
-            exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
-        }
-         */
     }
+
+    private fun squareRoot(exp: String, indexChar: Int): String {
+        var text = exp
+        var index = text.length - 1
+        for (i in indexChar + 1 until text.length) {  //2x2x2
+            if (!text[i].isDigit() && text[i] != '.') {
+                index = i-1
+                break
+            }
+        }
+        var n = text.substring(indexChar+1, index+1).toDouble()
+        return text.substring(0,indexChar)+ sqrt(n).toString() + text.substring(index+1, text.length)
+    }
+
+    private fun factorial(exp: String, indexChar: Int): String {
+        var text = exp
+        var index: Int = 0
+        for (i in indexChar - 1 downTo 0) {
+            if (!text[i].isDigit() && text[i] != '.') {
+                index = i + 1
+                break
+            }
+        }
+
+
+        var n = text.substring(index, indexChar).toDouble()
+
+
+        var number: Int
+        if (isInt(n)){
+            number = n.toInt()
+        }else{
+            //TODO: se il fattoriale non è un int da errore di sintassi, sistemare più avanti
+            return errorList[1]
+        }
+        var result = 1
+        for (i in 1..number) {
+            result *= i
+        }
+        return text.substring(0,indexChar)+ number.toString() + text.substring(index+1, text.length)
+    }
+
+
+
 
     private fun getNumbers(indexChar: Int, t: String): MutableList<Int> {
         var text: String = t
