@@ -14,6 +14,7 @@ class CalculatorViewModel: ViewModel() {
 
     fun onAction(action: CalculatorAction) {
         when (action) {
+            is CalculatorAction.String -> enterStr(s = action.s)
             is CalculatorAction.Character -> enterChar(c = action.c)
             is CalculatorAction.Decimal -> enterDecimal()
             is CalculatorAction.Clear -> performClear()
@@ -310,6 +311,13 @@ class CalculatorViewModel: ViewModel() {
         clearError()
         _state.value = _state.value.copy(
             expression = _state.value.expression + c
+        )
+    }
+
+    private fun enterStr(s: String) {
+        clearError()
+        _state.value = _state.value.copy(
+            expression = _state.value.expression + s
         )
     }
 

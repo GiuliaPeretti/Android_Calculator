@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.android_calculator.ui.theme.brightPink
 import com.example.android_calculator.ui.theme.darkPink
+import com.example.android_calculator.ui.theme.darkerPink
 import com.example.android_calculator.ui.theme.lightPink
 import kotlinx.coroutines.flow.StateFlow
 
@@ -69,24 +71,73 @@ fun SecondScreen(
                 textAlign = TextAlign.End,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 32.dp),
+                    .padding(vertical = 100.dp),
                 fontWeight = FontWeight.Light,
                 fontSize = 60.sp,
                 color = Color.White,
                 maxLines = 2
             )
-            Log.d("deb", "Calculator")
-            Log.d("deb", state.expression)
-
-            Button(onClick = { navController.navigate("first") }) {
-                Text("Go Back")
-            }
-
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
+                CalculatorButton(   symbol = "lg",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.String("log("))}
+                )
+                CalculatorButton(   symbol = "ln",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.String("ln("))}
+                )
+                CalculatorButton(   symbol = "(",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.Character('('))}
+                )
+                CalculatorButton(   symbol = ")",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.Character(')'))}
+                )
+                CalculatorButton(   symbol = "^",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.Character('^'))}
+                )
+
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
+            ){
+                CalculatorButton(   symbol = "sin",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.String("sin("))}
+                )
+                CalculatorButton(   symbol = "AC",
+                    modifier = Modifier
+                        .background(lightPink)
+                        .aspectRatio(2f)
+                        .weight(2f),
+                    onclick = {onAction(CalculatorAction.Clear)}
+                )
                 CalculatorButton(   symbol = "Del",
                     modifier = Modifier
                         .background(lightPink)
@@ -94,27 +145,12 @@ fun SecondScreen(
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Delete)}
                 )
-                CalculatorButton(   symbol = "(",
-                    modifier = Modifier
-                        .background(lightPink)
-                        .aspectRatio(1f)
-                        .weight(1f),
-                    onclick = {onAction(CalculatorAction.Character('('))}
-                )
-                CalculatorButton(   symbol = ")",
-                    modifier = Modifier
-                        .background(lightPink)
-                        .aspectRatio(1f)
-                        .weight(1f),
-                    onclick = {onAction(CalculatorAction.Character(')'))}
-                )
-                CalculatorButton(   symbol = "!",
-                    //TODO: questo
+                CalculatorButton(   symbol = "/",
                     modifier = Modifier
                         .background(brightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.Character('!'))}
+                    onclick = {onAction(CalculatorAction.Character('/'))}
                 )
 
             }
@@ -124,6 +160,13 @@ fun SecondScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
+                CalculatorButton(   symbol = "cos",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.String("cos("))}
+                )
                 CalculatorButton(   symbol = "7",
                     modifier = Modifier
                         .background(darkPink)
@@ -145,13 +188,12 @@ fun SecondScreen(
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Character('9'))}
                 )
-                CalculatorButton(   symbol = "√",
-                    //TODO: questo
+                CalculatorButton(   symbol = "x",
                     modifier = Modifier
                         .background(brightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.Character('√'))}
+                    onclick = {onAction(CalculatorAction.Character('x'))}
                 )
 
 
@@ -161,6 +203,13 @@ fun SecondScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
+                CalculatorButton(   symbol = "tan",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.String("tan("))}
+                )
                 CalculatorButton(   symbol = "4",
                     modifier = Modifier
                         .background(darkPink)
@@ -182,13 +231,12 @@ fun SecondScreen(
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Character('6'))}
                 )
-                CalculatorButton(   symbol = "π",
-                    //TODO: fai π
+                CalculatorButton(   symbol = "-",
                     modifier = Modifier
                         .background(brightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.Character('π'))}
+                    onclick = {onAction(CalculatorAction.Character('-'))}
                 )
 
 
@@ -198,6 +246,13 @@ fun SecondScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
+                CalculatorButton(   symbol = "!",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.Character('!'))}
+                )
                 CalculatorButton(   symbol = "1",
                     modifier = Modifier
                         .background(darkPink)
@@ -219,13 +274,12 @@ fun SecondScreen(
                         .weight(1f),
                     onclick = {onAction(CalculatorAction.Character('3'))}
                 )
-                CalculatorButton(   symbol = "lg",
-                    //TODO: fai log
+                CalculatorButton(   symbol = "+",
                     modifier = Modifier
                         .background(brightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.String("log("))}
+                    onclick = {onAction(CalculatorAction.Character('+'))}
                 )
 
             }
@@ -234,6 +288,20 @@ fun SecondScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
+                CalculatorButton(   symbol = "√",
+                    modifier = Modifier
+                        .background(darkPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = {onAction(CalculatorAction.String("√("))}
+                )
+                CalculatorButton(   symbol = "⇋",
+                    modifier = Modifier
+                        .background(lightPink)
+                        .aspectRatio(1f)
+                        .weight(1f),
+                    onclick = { navController.navigate("first") }
+                )
                 CalculatorButton(   symbol = "0",
                     modifier = Modifier
                         .background(darkPink)
@@ -250,18 +318,10 @@ fun SecondScreen(
                 )
                 CalculatorButton(   symbol = "=",
                     modifier = Modifier
-                        .background(lightPink)
-                        .aspectRatio(1f)
-                        .weight(1f),
-                    onclick = {onAction(CalculatorAction.Calculate)}
-                )
-                CalculatorButton(   symbol = "ln",
-                    //TODO: fai ln
-                    modifier = Modifier
                         .background(brightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.String("ln("))}
+                    onclick = {onAction(CalculatorAction.Calculate)}
                 )
             }
 
