@@ -4,4 +4,5 @@ import javax.xml.xpath.XPathExpression
 
 data class CalculatorState(
     var expression: String ="",
+    var deg: String = "deg"
 )

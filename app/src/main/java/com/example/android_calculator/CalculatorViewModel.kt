@@ -29,11 +29,27 @@ class CalculatorViewModel: ViewModel() {
             is CalculatorAction.Clear -> performClear()
             is CalculatorAction.Calculate -> CalculateResult(_state.value.expression)
             is CalculatorAction.Delete -> performeDelete()
+            is CalculatorAction.ChangeDeg ->changeDeg()
         }
     }
 
+    private fun changeDeg() {
+        if ( _state.value.deg=="deg"){
+            _state.value = _state.value.copy(
+                deg = "rad"
+            )
+        } else {
+            _state.value = _state.value.copy(
+                deg = "deg"
+            )
+        }
+
+    }
+
     private fun performClear() {
-        _state.value = CalculatorState()
+        _state.value = _state.value.copy(
+            expression = ""
+        )
     }
 
     private fun performeDelete() {
@@ -200,7 +216,6 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun Cosine(exp: String, indexChar: Int): String{
-        //TODO: per ora è solo log in base 10, vedi di sistemare
         var text = exp
         var index = text.length - 1
         for (i in indexChar + 3 until text.length) {  //2x2x2
@@ -209,15 +224,16 @@ class CalculatorViewModel: ViewModel() {
                 break
             }
         }
-        var n = degToRadius(text.substring(indexChar+3, index+1).toDouble())
-
-        var result = radiusToDeg(cos(n))
+        var n = text.substring(indexChar+3, index+1).toDouble()
+        if (_state.value.deg=="deg"){
+            n = degToRadius(n)
+        }
+        var result = cos(n)
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
         return text.substring(0,indexChar)+ result + text.substring(index+1, text.length)
     }
 
     private fun Sinus(exp: String, indexChar: Int): String{
-        //TODO: per ora è solo log in base 10, vedi di sistemare
         var text = exp
         var index = text.length - 1
         for (i in indexChar + 3 until text.length) {  //2x2x2
@@ -226,12 +242,16 @@ class CalculatorViewModel: ViewModel() {
                 break
             }
         }
-        var n = degToRadius(text.substring(indexChar+3, index+1).toDouble())
-        return text.substring(0,indexChar)+ radiusToDeg(sin(n)).toString() + text.substring(index+1, text.length)
+        var n = text.substring(indexChar+3, index+1).toDouble()
+        if (_state.value.deg=="deg"){
+            n = degToRadius(n)
+        }
+        var result = sin(n)
+        result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
+        return text.substring(0,indexChar)+ result.toString() + text.substring(index+1, text.length)
     }
 
     private fun Tangent(exp: String, indexChar: Int): String{
-        //TODO: per ora è solo log in base 10, vedi di sistemare
         var text = exp
         var index = text.length - 1
         for (i in indexChar + 3 until text.length) {  //2x2x2
@@ -240,8 +260,13 @@ class CalculatorViewModel: ViewModel() {
                 break
             }
         }
-        var n = degToRadius(text.substring(indexChar+3, index+1).toDouble())
-        return text.substring(0,indexChar)+ radiusToDeg(tan(n)).toString() + text.substring(index+1, text.length)
+        var n = text.substring(indexChar+3, index+1).toDouble()
+        if (_state.value.deg=="deg"){
+            n = degToRadius(n)
+        }
+        var result = tan(n)
+        result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
+        return text.substring(0,indexChar)+ result.toString() + text.substring(index+1, text.length)
     }
 
 
@@ -328,6 +353,9 @@ class CalculatorViewModel: ViewModel() {
             )
             return
         }
+        if (text.contains("π", ignoreCase = true)){
+            text=handlePi(text)
+        }
         while ('(' in text) {
             //TODO: togli ()
             Log.d("deb", "entra in (")
@@ -381,6 +409,17 @@ class CalculatorViewModel: ViewModel() {
         )
 
 
+    }
+
+    private fun handlePi(t: String): String {
+        var text= t
+        while("π" in text){
+            val index=text.indexOf("π")
+            text = text.substring(0,index) + PI + text.substring(index+1, text.length)
+            //text = text.substring(0,index)+ "x" + PI + "x" +text.substring(index+1, text.length)
+            Log.d("pi",PI.toString())
+        }
+        return text
     }
 
     private fun insidePar(t: String): MutableList<Int> { //(34(23*2)3(23))

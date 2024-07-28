@@ -7,4 +7,5 @@ sealed class CalculatorAction{
     object Delete: CalculatorAction()
     object Decimal: CalculatorAction()
     object Calculate: CalculatorAction()
+    object ChangeDeg: CalculatorAction()
 }
