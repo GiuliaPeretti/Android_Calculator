@@ -30,6 +30,7 @@ class CalculatorViewModel: ViewModel() {
             is CalculatorAction.Calculate -> CalculateResult(_state.value.expression)
             is CalculatorAction.Delete -> performeDelete()
             is CalculatorAction.ChangeDeg ->changeDeg()
+            is CalculatorAction.movePosition -> movePos(p = action.p + _state.value.pos)
         }
     }
 
@@ -57,6 +58,8 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression.dropLast(1)
         )
+        movePos(0)
+        updateDisplayed()
     }
 
     private fun performOperation(exp:String): String {
@@ -188,7 +191,6 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun naturaLogarithm(exp: String, indexChar: Int): String{
-        //TODO: QUESTO
         var text = exp
         var index = text.length - 1
         for (i in indexChar + 2 until text.length) {  //2x2x2
@@ -202,7 +204,6 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun Logarithm(exp: String, indexChar: Int): String{
-        //TODO: per ora è solo log in base 10, vedi di sistemare
         var text = exp
         var index = text.length - 1
         for (i in indexChar + 3 until text.length) {  //2x2x2
@@ -268,8 +269,6 @@ class CalculatorViewModel: ViewModel() {
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
         return text.substring(0,indexChar)+ result.toString() + text.substring(index+1, text.length)
     }
-
-
 
     private fun getNumbers(indexChar: Int, t: String): MutableList<Int> {
         var text: String = t
@@ -407,8 +406,8 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = r
         )
-
-
+        movePos(0)
+        updateDisplayed()
     }
 
     private fun handlePi(t: String): String {
@@ -508,6 +507,8 @@ class CalculatorViewModel: ViewModel() {
                 )
             }
         }
+        movePos(0)
+        updateDisplayed()
     }
 
     private fun enterChar(c: Char) {
@@ -515,6 +516,8 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression + c
         )
+        movePos(0)
+        updateDisplayed()
     }
 
     private fun enterStr(s: String) {
@@ -522,6 +525,8 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression + s
         )
+        movePos(0)
+        updateDisplayed()
     }
 
     private fun clearError(){
@@ -530,9 +535,29 @@ class CalculatorViewModel: ViewModel() {
                 expression = ""
             )
         }
+        updateDisplayed()
     }
 
+    private fun updateDisplayed(){
+        if (_state.value.expression.length<=10){
+            _state.value = _state.value.copy(
+                displayed = _state.value.expression
+            )
+        } else {
+            _state.value = _state.value.copy(
+                displayed = _state.value.expression.substring(_state.value.pos, _state.value.pos+10)
+            )
+        }
+    }
 
+    private fun movePos(p: Int){
+        if(p!=-1 && p!=_state.value.expression.length){
+            _state.value = _state.value.copy(
+                pos = _state.value.pos+p
+            )
+        }
+        updateDisplayed()
+    }
 
     companion object {
         private const val MAX_NUM_LENGHT=8

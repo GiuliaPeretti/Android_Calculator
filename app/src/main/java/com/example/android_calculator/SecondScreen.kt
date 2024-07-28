@@ -54,7 +54,7 @@ fun SecondScreen(
             verticalArrangement = Arrangement.spacedBy(buttonSpacing)
         ) {
             Text(
-                text = state.expression,
+                text = state.displayed,
                 textAlign = TextAlign.End,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,14 +97,14 @@ fun SecondScreen(
                         .background(lightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {/*TODO: gestisci frecce*/}
+                    onclick = {onAction(CalculatorAction.movePosition(-1))}
                 )
                 CalculatorButton(   symbol = "->",
                     modifier = Modifier
                         .background(lightPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {/*TODO: gestisci frecce*/}
+                    onclick = {onAction(CalculatorAction.movePosition(+1))}
                 )
 
 

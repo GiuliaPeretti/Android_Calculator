@@ -51,7 +51,7 @@ fun Calculator(
             verticalArrangement = Arrangement.spacedBy(buttonSpacing)
         ) {
             Text(
-                text = state.expression,
+                text = state.displayed,
                 textAlign = TextAlign.End,
                 modifier = Modifier
                     .fillMaxWidth()
