@@ -6,10 +6,16 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.cos
+import kotlin.math.ln
+import kotlin.math.log
 import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.tan
 
 class CalculatorViewModel: ViewModel() {
+    //TODO: fai vedere solo x caratteri di una stringa e poi fai navigare con le frecce (aggiungi frecce)
     private val _state = MutableStateFlow(CalculatorState())
     val state: StateFlow<CalculatorState> = _state.asStateFlow()
 
@@ -45,6 +51,11 @@ class CalculatorViewModel: ViewModel() {
             if (expression.contains("^", ignoreCase = true)
                 || expression.contains("√", ignoreCase = true)
                 || expression.contains("!", ignoreCase = true)
+                || expression.contains("ln", ignoreCase = true)
+                || expression.contains("log", ignoreCase = true)
+                || expression.contains("cos", ignoreCase = true)
+                || expression.contains("sin", ignoreCase = true)
+                || expression.contains("tan", ignoreCase = true)
             ) {
                 for (i in expression.indices) {
                     if (expression[i] == '^') {
@@ -57,6 +68,26 @@ class CalculatorViewModel: ViewModel() {
                     }
                     if (expression[i] == '!') {
                         expression = factorial(exp = expression, indexChar = i)
+                        break
+                    }
+                    if (i+2< expression.length && expression.substring(i, i+2) == "ln"){
+                        expression = naturaLogarithm(exp=expression, indexChar=i)
+                        break
+                    }
+                    if (i+3< expression.length && expression.substring(i, i+3) == "log"){
+                        expression = Logarithm(exp=expression, indexChar=i)
+                        break
+                    }
+                    if (i+3< expression.length && expression.substring(i, i+3) == "cos"){
+                        expression = Logarithm(exp=expression, indexChar=i)
+                        break
+                    }
+                    if (i+3< expression.length && expression.substring(i, i+3) == "sin"){
+                        expression = Logarithm(exp=expression, indexChar=i)
+                        break
+                    }
+                    if (i+3< expression.length && expression.substring(i, i+3) == "tan"){
+                        expression = Logarithm(exp=expression, indexChar=i)
                         break
                     }
                 }
@@ -122,24 +153,93 @@ class CalculatorViewModel: ViewModel() {
             }
         }
 
-
         var n = text.substring(index, indexChar).toDouble()
-
 
         var number: Int
         if (isInt(n)){
             number = n.toInt()
         }else{
             //TODO: se il fattoriale non è un int da errore di sintassi, sistemare più avanti
-            return errorList[1]
+            return errorList[0]
         }
         var result = 1
         for (i in 1..number) {
             result *= i
         }
-        return text.substring(0,indexChar)+ number.toString() + text.substring(index+1, text.length)
+        return text.substring(0,index) + result.toString() + text.substring(indexChar+1, text.length)
     }
 
+    private fun naturaLogarithm(exp: String, indexChar: Int): String{
+        //TODO: QUESTO
+        var text = exp
+        var index = text.length - 1
+        for (i in indexChar + 2 until text.length) {  //2x2x2
+            if (!text[i].isDigit() && text[i] != '.') {
+                index = i-1
+                break
+            }
+        }
+        var n = text.substring(indexChar+2, index+1).toDouble()
+        return text.substring(0,indexChar)+ ln(n).toString() + text.substring(index+1, text.length)
+    }
+
+    private fun Logarithm(exp: String, indexChar: Int): String{
+        //TODO: per ora è solo log in base 10, vedi di sistemare
+        var text = exp
+        var index = text.length - 1
+        for (i in indexChar + 3 until text.length) {  //2x2x2
+            if (!text[i].isDigit() && text[i] != '.') {
+                index = i-1
+                break
+            }
+        }
+        var n = text.substring(indexChar+3, index+1).toDouble()
+        return text.substring(0,indexChar)+ log(n, 10.0).toString() + text.substring(index+1, text.length)
+    }
+
+    private fun Cosine(exp: String, indexChar: Int): String{
+        //TODO: per ora è solo log in base 10, vedi di sistemare
+        var text = exp
+        var index = text.length - 1
+        for (i in indexChar + 3 until text.length) {  //2x2x2
+            if (!text[i].isDigit() && text[i] != '.') {
+                index = i-1
+                break
+            }
+        }
+        var n = text.substring(indexChar+3, index+1).toDouble()
+        return text.substring(0,indexChar)+ cos(n).toString() + text.substring(index+1, text.length)
+    }
+
+    private fun Sinus(exp: String, indexChar: Int): String{
+        //TODO: per ora è solo log in base 10, vedi di sistemare
+        var text = exp
+        var index = text.length - 1
+        for (i in indexChar + 3 until text.length) {  //2x2x2
+            if (!text[i].isDigit() && text[i] != '.') {
+                index = i-1
+                break
+            }
+        }
+        var n = text.substring(indexChar+3, index+1).toDouble()
+        //form degree to radius
+        n= n*
+        return text.substring(0,indexChar)+ sin(n).toString() + text.substring(index+1, text.length)
+    }
+
+    private fun Tangent(exp: String, indexChar: Int): String{
+        //TODO: per ora è solo log in base 10, vedi di sistemare
+        var text = exp
+        var index = text.length - 1
+        for (i in indexChar + 3 until text.length) {  //2x2x2
+            if (!text[i].isDigit() && text[i] != '.') {
+                index = i-1
+                break
+            }
+        }
+        var n = text.substring(indexChar+3, index+1).toDouble()
+        return text.substring(0,indexChar)+ tan(n).toString() + text.substring(index+1, text.length)
+    }
 
 
 
@@ -199,9 +299,9 @@ class CalculatorViewModel: ViewModel() {
 
     private fun isInt(n: Double): Boolean {
         if (n - n.toInt() > 0) {
-            return (true)
+            return false
         } else {
-            return (false)
+            return true
         }
     }
 
@@ -319,6 +419,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun isOperator(c: Char): Boolean{
+        //TODO: forse aggiungi quelli nuovi
         if (c=='+' || c=='-' || c=='x' || c=='/' || c=='^'){
             return true
         }
