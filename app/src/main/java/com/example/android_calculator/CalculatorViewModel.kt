@@ -415,7 +415,20 @@ class CalculatorViewModel: ViewModel() {
         var text= t
         while("π" in text){
             val index=text.indexOf("π")
+            if (index!=0 && index!=text.length-1 && text[index-1]!='(' && text[index+1]!=')'){
+                text = text.substring(0,index) + PI + text.substring(index+1, text.length)
+                break
+            }
+            if (index!=0  && text[index-1]!='('){
+                text = text.substring(0,index) + "x" + PI  + text.substring(index+1, text.length)
+                break
+            }
+            if (index!=text.length-1 && text[index+1]!=')'){
+                text = text.substring(0,index) + PI + "x" + text.substring(index+1, text.length)
+                break
+            }
             text = text.substring(0,index) + PI + text.substring(index+1, text.length)
+
             //text = text.substring(0,index)+ "x" + PI + "x" +text.substring(index+1, text.length)
             Log.d("pi",PI.toString())
         }
