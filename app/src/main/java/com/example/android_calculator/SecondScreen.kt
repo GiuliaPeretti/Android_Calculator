@@ -60,9 +60,9 @@ fun SecondScreen(
                     .fillMaxWidth()
                     .padding(vertical = 60.dp),
                 fontWeight = FontWeight.Light,
-                fontSize = 60.sp,
+                fontSize = 40.sp,
                 color = Color.White,
-                maxLines = 2
+                maxLines = 1
             )
 
             Row(
@@ -74,9 +74,7 @@ fun SecondScreen(
                         .background(darkPink)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {/*TODO: cambia da rad a deg*/
-                        onAction(CalculatorAction.ChangeDeg)
-                    }
+                    onclick = { onAction(CalculatorAction.ChangeDeg)}
                 )
                 CalculatorButton(   symbol = "lg",
                     modifier = Modifier
@@ -158,7 +156,6 @@ fun SecondScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 CalculatorButton(   symbol = "π",
-                    //TODO: fai pi
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)
@@ -197,7 +194,6 @@ fun SecondScreen(
             ){
 
                 CalculatorButton(   symbol = "%",
-                    //TODO: fai percentuale
                     modifier = Modifier
                         .background(darkPink)
                         .aspectRatio(1f)

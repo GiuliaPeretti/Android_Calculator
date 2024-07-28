@@ -16,7 +16,6 @@ import kotlin.math.PI
 
 
 class CalculatorViewModel: ViewModel() {
-    //TODO: fai vedere solo x caratteri di una stringa e poi fai navigare con le frecce (aggiungi frecce)
     private val _state = MutableStateFlow(CalculatorState())
     val state: StateFlow<CalculatorState> = _state.asStateFlow()
 
@@ -50,6 +49,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = ""
         )
+        displayResult()
     }
 
     private fun performeDelete() {
@@ -57,7 +57,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression.dropLast(1)
         )
-        displayResult()
+        movePos(_state.value.expression.length)
     }
 
     private fun performOperation(exp:String): String {
@@ -76,6 +76,7 @@ class CalculatorViewModel: ViewModel() {
                 || expression.contains("sin", ignoreCase = true)
                 || expression.contains("tan", ignoreCase = true)
             ) {
+                //TODO: sin(2)cos(3) in questi casi va messo un x in mezzo
                 for (i in expression.indices) {
                     if (expression[i] == '^') {
                         expression = doOperation(exp = expression, i = i)
@@ -145,7 +146,6 @@ class CalculatorViewModel: ViewModel() {
         }
         val result: Double = getResult(n1, n2, exp[i])
         //TODO("check if result is int")
-        //TODO: errore qua giu, penso che il vero problema sia in getNumbers
         return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
     }
 
@@ -159,6 +159,9 @@ class CalculatorViewModel: ViewModel() {
             }
         }
         var n = text.substring(indexChar+1, index+1).toDouble()
+        if (index!= 0 && text[index-1].isDigit() ){
+            return text.substring(0,indexChar)+"x" + sqrt(n).toString() + text.substring(index+1, text.length)
+        }
         return text.substring(0,indexChar)+ sqrt(n).toString() + text.substring(index+1, text.length)
     }
 
@@ -198,6 +201,9 @@ class CalculatorViewModel: ViewModel() {
             }
         }
         var n = text.substring(indexChar+2, index+1).toDouble()
+        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
+            return text.substring(0,indexChar)+"x" + ln(n).toString() + text.substring(index+1, text.length)
+        }
         return text.substring(0,indexChar)+ ln(n).toString() + text.substring(index+1, text.length)
     }
 
@@ -211,6 +217,9 @@ class CalculatorViewModel: ViewModel() {
             }
         }
         var n = text.substring(indexChar+3, index+1).toDouble()
+        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
+            return text.substring(0,indexChar)+"x" + log(n, 10.0).toString() + text.substring(index+1, text.length)
+        }
         return text.substring(0,indexChar)+ log(n, 10.0).toString() + text.substring(index+1, text.length)
     }
 
@@ -229,6 +238,9 @@ class CalculatorViewModel: ViewModel() {
         }
         var result = cos(n)
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
+        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
+            return text.substring(0,indexChar)+"x" + result + text.substring(index+1, text.length)
+        }
         return text.substring(0,indexChar)+ result + text.substring(index+1, text.length)
     }
 
@@ -247,6 +259,9 @@ class CalculatorViewModel: ViewModel() {
         }
         var result = sin(n)
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
+        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
+            return text.substring(0,indexChar)+"x" + result + text.substring(index+1, text.length)
+        }
         return text.substring(0,indexChar)+ result.toString() + text.substring(index+1, text.length)
     }
 
@@ -265,6 +280,9 @@ class CalculatorViewModel: ViewModel() {
         }
         var result = tan(n)
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
+        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
+            return text.substring(0,indexChar)+"x" + result + text.substring(index+1, text.length)
+        }
         return text.substring(0,indexChar)+ result.toString() + text.substring(index+1, text.length)
     }
 
@@ -353,9 +371,12 @@ class CalculatorViewModel: ViewModel() {
         if (text.contains("π", ignoreCase = true)){
             text=handlePi(text)
         }
+        if (text.contains("%", ignoreCase = true)){
+            text=handlePercentage(text)
+        }
+
         while ('(' in text) {
             //TODO: togli ()
-            Log.d("deb", "entra in (")
             val list: MutableList<Int> = insidePar(text)
             val pos1 = list[0]
             val pos2 = list[1]
@@ -411,22 +432,32 @@ class CalculatorViewModel: ViewModel() {
         var text= t
         while("π" in text){
             val index=text.indexOf("π")
-            if (index!=0 && index!=text.length-1 && text[index-1]!='(' && text[index+1]!=')'){
+            if (index!=0 && index!=text.length-1 && text[index-1]!='(' && text[index+1]!=')' && !isOperator(text[index-1]) && !isOperator(text[index+1])      ){
                 text = text.substring(0,index) + PI + text.substring(index+1, text.length)
                 break
             }
-            if (index!=0  && text[index-1]!='('){
+            if (index!=0  && text[index-1]!='(' && !isOperator(text[index-1]) ){
                 text = text.substring(0,index) + "x" + PI  + text.substring(index+1, text.length)
                 break
             }
-            if (index!=text.length-1 && text[index+1]!=')'){
+            if (index!=text.length-1 && text[index+1]!=')' && !isOperator(text[index+1]) ){
                 text = text.substring(0,index) + PI + "x" + text.substring(index+1, text.length)
                 break
             }
             text = text.substring(0,index) + PI + text.substring(index+1, text.length)
+        }
+        return text
+    }
 
-            //text = text.substring(0,index)+ "x" + PI + "x" +text.substring(index+1, text.length)
-            Log.d("pi",PI.toString())
+    private fun handlePercentage(t: String): String {
+        var text= t
+        while("%" in text){
+            val index=text.indexOf("%")
+            if (index!=text.length-1 && text[index+1]!=')' && !isOperator(text[index+1]) ){
+                text = text.substring(0,index) + "/100x" + text.substring(index+1, text.length)
+                break
+            }
+            text = text.substring(0,index) + "/100" + text.substring(index+1, text.length)
         }
         return text
     }
@@ -447,6 +478,7 @@ class CalculatorViewModel: ViewModel() {
     //private fun resolveBrackets
 
     private fun isValid(t: String): Boolean{
+        //TODO: aggiungi regole per %, pi lg, ln ecc e sqrt
         var countPar = 0
         if (isOperator(t[0]) || isOperator(t[t.length-1])){
             return false
@@ -504,7 +536,7 @@ class CalculatorViewModel: ViewModel() {
                 )
             }
         }
-        displayResult()
+        movePos(_state.value.expression.length)
     }
 
     private fun enterChar(c: Char) {
@@ -512,7 +544,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression + c
         )
-        displayResult()
+        movePos(_state.value.expression.length)
     }
 
     private fun enterStr(s: String) {
@@ -520,7 +552,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression + s
         )
-        displayResult()
+        movePos(_state.value.expression.length)
     }
 
     private fun clearError(){
@@ -529,7 +561,7 @@ class CalculatorViewModel: ViewModel() {
                 expression = ""
             )
         }
-        displayResult()
+        movePos(_state.value.expression.length)
     }
 
     private fun displayResult(){
@@ -542,7 +574,7 @@ class CalculatorViewModel: ViewModel() {
             )
         } else {
             _state.value = _state.value.copy(
-                displayed = _state.value.expression.substring(0, 10)+".."
+                displayed = _state.value.expression.substring(0, 10)+"_"
             )
             _state.value = _state.value.copy(
                 pos = 10
@@ -552,29 +584,28 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun movePos(p: Int){
-        var exp = _state.value.expression
         if(p>=0 && p<=_state.value.expression.length){
             _state.value = _state.value.copy(
                 pos = p
             )
-            if(p>10){
+            if(p>15){
                 if (_state.value.pos==_state.value.expression.length){
                     _state.value = _state.value.copy(
-                        displayed = ".."+_state.value.expression.substring(_state.value.pos-10, _state.value.pos)
+                        displayed = "_"+_state.value.expression.substring(_state.value.pos-15, _state.value.pos)
                     )
                 }else{
                     _state.value = _state.value.copy(
-                        displayed = ".."+_state.value.expression.substring(_state.value.pos-10, _state.value.pos)+".."
+                        displayed = "_"+_state.value.expression.substring(_state.value.pos-15, _state.value.pos)+"_"
                     )
                 }
             }else {
-                if (_state.value.expression.length<10){
+                if (_state.value.expression.length< 15 ){
                     _state.value = _state.value.copy(
                         displayed = _state.value.expression.substring(0,_state.value.expression.length)
                     )
                 } else {
                     _state.value = _state.value.copy(
-                        displayed = _state.value.expression.substring(0, 10)+".."
+                        displayed = _state.value.expression.substring(0, 15)+"_"
                     )
                 }
             }
