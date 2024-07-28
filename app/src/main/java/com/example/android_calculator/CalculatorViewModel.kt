@@ -6,13 +6,15 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.math.RoundingMode
 import kotlin.math.cos
 import kotlin.math.ln
 import kotlin.math.log
-import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
+import kotlin.math.PI
+
 
 class CalculatorViewModel: ViewModel() {
     //TODO: fai vedere solo x caratteri di una stringa e poi fai navigare con le frecce (aggiungi frecce)
@@ -79,15 +81,15 @@ class CalculatorViewModel: ViewModel() {
                         break
                     }
                     if (i+3< expression.length && expression.substring(i, i+3) == "cos"){
-                        expression = Logarithm(exp=expression, indexChar=i)
+                        expression = Cosine(exp=expression, indexChar=i)
                         break
                     }
                     if (i+3< expression.length && expression.substring(i, i+3) == "sin"){
-                        expression = Logarithm(exp=expression, indexChar=i)
+                        expression = Sinus(exp=expression, indexChar=i)
                         break
                     }
                     if (i+3< expression.length && expression.substring(i, i+3) == "tan"){
-                        expression = Logarithm(exp=expression, indexChar=i)
+                        expression = Tangent(exp=expression, indexChar=i)
                         break
                     }
                 }
@@ -207,8 +209,11 @@ class CalculatorViewModel: ViewModel() {
                 break
             }
         }
-        var n = text.substring(indexChar+3, index+1).toDouble()
-        return text.substring(0,indexChar)+ cos(n).toString() + text.substring(index+1, text.length)
+        var n = degToRadius(text.substring(indexChar+3, index+1).toDouble())
+
+        var result = radiusToDeg(cos(n))
+        result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
+        return text.substring(0,indexChar)+ result + text.substring(index+1, text.length)
     }
 
     private fun Sinus(exp: String, indexChar: Int): String{
@@ -221,10 +226,8 @@ class CalculatorViewModel: ViewModel() {
                 break
             }
         }
-        var n = text.substring(indexChar+3, index+1).toDouble()
-        //form degree to radius
-        n= n*
-        return text.substring(0,indexChar)+ sin(n).toString() + text.substring(index+1, text.length)
+        var n = degToRadius(text.substring(indexChar+3, index+1).toDouble())
+        return text.substring(0,indexChar)+ radiusToDeg(sin(n)).toString() + text.substring(index+1, text.length)
     }
 
     private fun Tangent(exp: String, indexChar: Int): String{
@@ -237,8 +240,8 @@ class CalculatorViewModel: ViewModel() {
                 break
             }
         }
-        var n = text.substring(indexChar+3, index+1).toDouble()
-        return text.substring(0,indexChar)+ tan(n).toString() + text.substring(index+1, text.length)
+        var n = degToRadius(text.substring(indexChar+3, index+1).toDouble())
+        return text.substring(0,indexChar)+ radiusToDeg(tan(n)).toString() + text.substring(index+1, text.length)
     }
 
 
@@ -303,6 +306,14 @@ class CalculatorViewModel: ViewModel() {
         } else {
             return true
         }
+    }
+
+    private fun degToRadius(n: Double): Double {
+        return (n * (PI / 180))
+    }
+
+    private fun radiusToDeg(n: Double): Double {
+        return (n * (180 / PI))
     }
 
     private fun CalculateResult(t: String) {
@@ -468,6 +479,8 @@ class CalculatorViewModel: ViewModel() {
             )
         }
     }
+
+
 
     companion object {
         private const val MAX_NUM_LENGHT=8
