@@ -1,7 +1,6 @@
 package com.example.android_calculator
 
 import android.util.Log
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,8 +57,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression.dropLast(1)
         )
-        movePos(0)
-        updateDisplayed()
+        displayResult()
     }
 
     private fun performOperation(exp:String): String {
@@ -406,8 +404,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = r
         )
-        movePos(0)
-        updateDisplayed()
+        displayResult()
     }
 
     private fun handlePi(t: String): String {
@@ -507,8 +504,7 @@ class CalculatorViewModel: ViewModel() {
                 )
             }
         }
-        movePos(0)
-        updateDisplayed()
+        displayResult()
     }
 
     private fun enterChar(c: Char) {
@@ -516,8 +512,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression + c
         )
-        movePos(0)
-        updateDisplayed()
+        displayResult()
     }
 
     private fun enterStr(s: String) {
@@ -525,8 +520,7 @@ class CalculatorViewModel: ViewModel() {
         _state.value = _state.value.copy(
             expression = _state.value.expression + s
         )
-        movePos(0)
-        updateDisplayed()
+        displayResult()
     }
 
     private fun clearError(){
@@ -535,28 +529,57 @@ class CalculatorViewModel: ViewModel() {
                 expression = ""
             )
         }
-        updateDisplayed()
+        displayResult()
     }
 
-    private fun updateDisplayed(){
+    private fun displayResult(){
         if (_state.value.expression.length<=10){
             _state.value = _state.value.copy(
                 displayed = _state.value.expression
             )
+            _state.value = _state.value.copy(
+                pos = _state.value.expression.length-1
+            )
         } else {
             _state.value = _state.value.copy(
-                displayed = _state.value.expression.substring(_state.value.pos, _state.value.pos+10)
+                displayed = _state.value.expression.substring(0, 10)+".."
+            )
+            _state.value = _state.value.copy(
+                pos = 10
             )
         }
+
     }
 
     private fun movePos(p: Int){
-        if(p!=-1 && p!=_state.value.expression.length){
+        var exp = _state.value.expression
+        if(p>=0 && p<=_state.value.expression.length){
             _state.value = _state.value.copy(
-                pos = _state.value.pos+p
+                pos = p
             )
+            if(p>10){
+                if (_state.value.pos==_state.value.expression.length){
+                    _state.value = _state.value.copy(
+                        displayed = ".."+_state.value.expression.substring(_state.value.pos-10, _state.value.pos)
+                    )
+                }else{
+                    _state.value = _state.value.copy(
+                        displayed = ".."+_state.value.expression.substring(_state.value.pos-10, _state.value.pos)+".."
+                    )
+                }
+            }else {
+                if (_state.value.expression.length<10){
+                    _state.value = _state.value.copy(
+                        displayed = _state.value.expression.substring(0,_state.value.expression.length)
+                    )
+                } else {
+                    _state.value = _state.value.copy(
+                        displayed = _state.value.expression.substring(0, 10)+".."
+                    )
+                }
+            }
         }
-        updateDisplayed()
+
     }
 
     companion object {
