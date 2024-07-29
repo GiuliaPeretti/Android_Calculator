@@ -526,7 +526,6 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun isOperator(c: Char): Boolean{
-        //TODO: forse aggiungi quelli nuovi
         if (c=='+' || c=='-' || c=='x' || c=='/' || c=='^'){
             return true
         }

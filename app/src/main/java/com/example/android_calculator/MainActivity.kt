@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +22,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.android_calculator.ui.theme.Android_calculatorTheme
+import androidx.compose.animation.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.navigation.NavBackStackEntry
 
 
 class MainActivity : ComponentActivity() {
@@ -56,7 +62,10 @@ fun MainScreen() {
     val state = viewModel.state
     val buttonSpacing = 8.dp
     NavHost(navController = navController, startDestination = "first") {
-        composable("first") { Calculator(
+        composable(
+            route="first",
+            enterTransition = { fadeIn(animationSpec = spring(stiffness = Spring.StiffnessHigh)) },
+        ) { Calculator(
             stateFlow = state,
             onAction = viewModel::onAction,
             buttonSpacing = buttonSpacing,
@@ -67,7 +76,11 @@ fun MainScreen() {
             viewModel = viewModel,
             navController = navController
         ) }
-        composable("second") { SecondScreen(
+        composable(
+            route="second",
+            enterTransition = { fadeIn(animationSpec = spring(stiffness = Spring.StiffnessHigh)) },
+
+        ) { SecondScreen(
             stateFlow = state,
             onAction = viewModel::onAction,
             buttonSpacing = buttonSpacing,
@@ -79,6 +92,8 @@ fun MainScreen() {
             navController = navController) }
     }
 }
+
+
 
 
 
