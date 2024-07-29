@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.android_calculator.ui.theme.Android_calculatorTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.StateFlow
 
 
@@ -37,6 +38,13 @@ fun SecondScreen(
     navController: NavHostController
 ) {
     val state by viewModel.state.collectAsState()
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(
+        color = Android_calculatorTheme().tertiary
+    )
+    systemUiController.setNavigationBarColor(
+        color = Android_calculatorTheme().background
+    )
     Box(modifier = Modifier){
         Column (
 
@@ -88,14 +96,14 @@ fun SecondScreen(
                         .background(Android_calculatorTheme().secondary)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.movePosition(-1))}
+                    onclick = {onAction(CalculatorAction.MovePosition(-1))}
                 )
                 CalculatorButton(   symbol = "->",
                     modifier = Modifier
                         .background(Android_calculatorTheme().secondary)
                         .aspectRatio(1f)
                         .weight(1f),
-                    onclick = {onAction(CalculatorAction.movePosition(+1))}
+                    onclick = {onAction(CalculatorAction.MovePosition(+1))}
                 )
 
 

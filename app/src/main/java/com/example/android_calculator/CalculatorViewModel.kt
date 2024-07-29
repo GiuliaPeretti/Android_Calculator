@@ -25,10 +25,10 @@ class CalculatorViewModel: ViewModel() {
             is CalculatorAction.Character -> enterChar(c = action.c)
             is CalculatorAction.Decimal -> enterDecimal()
             is CalculatorAction.Clear -> performClear()
-            is CalculatorAction.Calculate -> CalculateResult(_state.value.expression)
-            is CalculatorAction.Delete -> performeDelete()
+            is CalculatorAction.Calculate -> calculateResult(_state.value.expression)
+            is CalculatorAction.Delete -> performDelete()
             is CalculatorAction.ChangeDeg ->changeDeg()
-            is CalculatorAction.movePosition -> movePos(p = action.p + _state.value.pos)
+            is CalculatorAction.MovePosition -> movePos(p = action.p + _state.value.pos)
         }
     }
 
@@ -52,7 +52,7 @@ class CalculatorViewModel: ViewModel() {
         displayResult()
     }
 
-    private fun performeDelete() {
+    private fun performDelete() {
         clearError()
         _state.value = _state.value.copy(
             expression = _state.value.expression.dropLast(1)
@@ -94,19 +94,19 @@ class CalculatorViewModel: ViewModel() {
                         break
                     }
                     if (i+3< expression.length && expression.substring(i, i+3) == "log"){
-                        expression = Logarithm(exp=expression, indexChar=i)
+                        expression = logarithm(exp=expression, indexChar=i)
                         break
                     }
                     if (i+3< expression.length && expression.substring(i, i+3) == "cos"){
-                        expression = Cosine(exp=expression, indexChar=i)
+                        expression = cosine(exp=expression, indexChar=i)
                         break
                     }
                     if (i+3< expression.length && expression.substring(i, i+3) == "sin"){
-                        expression = Sinus(exp=expression, indexChar=i)
+                        expression = sinus(exp=expression, indexChar=i)
                         break
                     }
                     if (i+3< expression.length && expression.substring(i, i+3) == "tan"){
-                        expression = Tangent(exp=expression, indexChar=i)
+                        expression = tangent(exp=expression, indexChar=i)
                         break
                     }
                 }
@@ -148,34 +148,38 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun squareRoot(exp: String, indexChar: Int): String {
-        var text = exp
-        var index = text.length - 1
-        for (i in indexChar + 1 until text.length) {  //2x2x2
-            if (!text[i].isDigit() && text[i] != '.') {
+        var index = exp.length - 1
+        for (i in indexChar + 1 until exp.length) {  //2x2x2
+            if (!exp[i].isDigit() && exp[i] != '.') {
                 index = i-1
                 break
             }
         }
-        var n = text.substring(indexChar+1, index+1).toDouble()
-        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
-            return text.substring(0,indexChar)+"x" + sqrt(n).toString() + text.substring(index+1, text.length)
+        val n = exp.substring(indexChar + 1, index + 1).toDouble()
+        if (indexChar != 0 && exp[indexChar - 1].isDigit() ){
+            return exp.substring(0, indexChar) + "x" + sqrt(n).toString() + exp.substring(
+                index + 1,
+                exp.length
+            )
         }
-        return text.substring(0,indexChar)+ sqrt(n).toString() + text.substring(index+1, text.length)
+        return exp.substring(0, indexChar) + sqrt(n).toString() + exp.substring(
+            index + 1,
+            exp.length
+        )
     }
 
     private fun factorial(exp: String, indexChar: Int): String {
-        var text = exp
-        var index: Int = 0
+        var index = 0
         for (i in indexChar - 1 downTo 0) {
-            if (!text[i].isDigit() && text[i] != '.') {
+            if (!exp[i].isDigit() && exp[i] != '.') {
                 index = i + 1
                 break
             }
         }
 
-        var n = text.substring(index, indexChar).toDouble()
+        val n = exp.substring(index, indexChar).toDouble()
 
-        var number: Int
+        val number: Int
         if (isInt(n)){
             number = n.toInt()
         }else{
@@ -186,108 +190,133 @@ class CalculatorViewModel: ViewModel() {
         for (i in 1..number) {
             result *= i
         }
-        return text.substring(0,index) + result.toString() + text.substring(indexChar+1, text.length)
+        return exp.substring(0, index) + result.toString() + exp.substring(
+            indexChar + 1,
+            exp.length
+        )
     }
 
     private fun naturaLogarithm(exp: String, indexChar: Int): String{
-        var text = exp
-        var index = text.length - 1
-        for (i in indexChar + 2 until text.length) {  //2x2x2
-            if (!text[i].isDigit() && text[i] != '.') {
+        var index = exp.length - 1
+        for (i in indexChar + 2 until exp.length) {  //2x2x2
+            if (!exp[i].isDigit() && exp[i] != '.') {
                 index = i-1
                 break
             }
         }
-        var n = text.substring(indexChar+2, index+1).toDouble()
-        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
-            return text.substring(0,indexChar)+"x" + ln(n).toString() + text.substring(index+1, text.length)
+        val n = exp.substring(indexChar + 2, index + 1).toDouble()
+        if (indexChar != 0 && exp[indexChar - 1].isDigit() ){
+            return exp.substring(0, indexChar) + "x" + ln(n).toString() + exp.substring(
+                index + 1,
+                exp.length
+            )
         }
-        return text.substring(0,indexChar)+ ln(n).toString() + text.substring(index+1, text.length)
+        return exp.substring(0, indexChar) + ln(n).toString() + exp.substring(
+            index + 1,
+            exp.length
+        )
     }
 
-    private fun Logarithm(exp: String, indexChar: Int): String{
-        var text = exp
-        var index = text.length - 1
-        for (i in indexChar + 3 until text.length) {  //2x2x2
-            if (!text[i].isDigit() && text[i] != '.') {
+    private fun logarithm(exp: String, indexChar: Int): String{
+        var index = exp.length - 1
+        for (i in indexChar + 3 until exp.length) {  //2x2x2
+            if (!exp[i].isDigit() && exp[i] != '.') {
                 index = i-1
                 break
             }
         }
-        var n = text.substring(indexChar+3, index+1).toDouble()
-        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
-            return text.substring(0,indexChar)+"x" + log(n, 10.0).toString() + text.substring(index+1, text.length)
+        val n = exp.substring(indexChar + 3, index + 1).toDouble()
+        if (indexChar != 0 && exp[indexChar - 1].isDigit() ){
+            return exp.substring(0, indexChar) + "x" + log(n, 10.0).toString() + exp.substring(
+                index + 1,
+                exp.length
+            )
         }
-        return text.substring(0,indexChar)+ log(n, 10.0).toString() + text.substring(index+1, text.length)
+        return exp.substring(0, indexChar) + log(n, 10.0).toString() + exp.substring(
+            index + 1,
+            exp.length
+        )
     }
 
-    private fun Cosine(exp: String, indexChar: Int): String{
-        var text = exp
-        var index = text.length - 1
-        for (i in indexChar + 3 until text.length) {  //2x2x2
-            if (!text[i].isDigit() && text[i] != '.') {
+    private fun cosine(exp: String, indexChar: Int): String{
+        var index = exp.length - 1
+        for (i in indexChar + 3 until exp.length) {  //2x2x2
+            if (!exp[i].isDigit() && exp[i] != '.') {
                 index = i-1
                 break
             }
         }
-        var n = text.substring(indexChar+3, index+1).toDouble()
+        var n = exp.substring(indexChar + 3, index + 1).toDouble()
         if (_state.value.deg=="deg"){
             n = degToRadius(n)
         }
         var result = cos(n)
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
-        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
-            return text.substring(0,indexChar)+"x" + result + text.substring(index+1, text.length)
+        if (indexChar != 0 && exp[indexChar - 1].isDigit() ){
+            return exp.substring(0, indexChar) + "x" + result + exp.substring(
+                index + 1,
+                exp.length
+            )
         }
-        return text.substring(0,indexChar)+ result + text.substring(index+1, text.length)
+        return exp.substring(0, indexChar) + result + exp.substring(index + 1, exp.length)
     }
 
-    private fun Sinus(exp: String, indexChar: Int): String{
-        var text = exp
-        var index = text.length - 1
-        for (i in indexChar + 3 until text.length) {  //2x2x2
-            if (!text[i].isDigit() && text[i] != '.') {
+    private fun sinus(exp: String, indexChar: Int): String{
+        var index = exp.length - 1
+        for (i in indexChar + 3 until exp.length) {  //2x2x2
+            if (!exp[i].isDigit() && exp[i] != '.') {
                 index = i-1
                 break
             }
         }
-        var n = text.substring(indexChar+3, index+1).toDouble()
+        var n = exp.substring(indexChar + 3, index + 1).toDouble()
         if (_state.value.deg=="deg"){
             n = degToRadius(n)
         }
         var result = sin(n)
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
-        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
-            return text.substring(0,indexChar)+"x" + result + text.substring(index+1, text.length)
+        if (indexChar != 0 && exp[indexChar - 1].isDigit() ){
+            return exp.substring(0, indexChar) + "x" + result + exp.substring(
+                index + 1,
+                exp.length
+            )
         }
-        return text.substring(0,indexChar)+ result.toString() + text.substring(index+1, text.length)
+        return exp.substring(0, indexChar) + result.toString() + exp.substring(
+            index + 1,
+            exp.length
+        )
     }
 
-    private fun Tangent(exp: String, indexChar: Int): String{
-        var text = exp
-        var index = text.length - 1
-        for (i in indexChar + 3 until text.length) {  //2x2x2
-            if (!text[i].isDigit() && text[i] != '.') {
+    private fun tangent(exp: String, indexChar: Int): String{
+        var index = exp.length - 1
+        for (i in indexChar + 3 until exp.length) {  //2x2x2
+            if (!exp[i].isDigit() && exp[i] != '.') {
                 index = i-1
                 break
             }
         }
-        var n = text.substring(indexChar+3, index+1).toDouble()
+        var n = exp.substring(indexChar + 3, index + 1).toDouble()
         if (_state.value.deg=="deg"){
             n = degToRadius(n)
         }
         var result = tan(n)
         result = result.toBigDecimal().setScale(10, RoundingMode.HALF_EVEN).toDouble()
-        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
-            return text.substring(0,indexChar)+"x" + result + text.substring(index+1, text.length)
+        if (indexChar != 0 && exp[indexChar - 1].isDigit() ){
+            return exp.substring(0, indexChar) + "x" + result + exp.substring(
+                index + 1,
+                exp.length
+            )
         }
-        return text.substring(0,indexChar)+ result.toString() + text.substring(index+1, text.length)
+        return exp.substring(0, indexChar) + result.toString() + exp.substring(
+            index + 1,
+            exp.length
+        )
     }
 
     private fun getNumbers(indexChar: Int, t: String): MutableList<Int> {
-        var text: String = t
+        val text: String = t
         val numbers = mutableListOf(0, text.length - 1)
-        var index: Int = 0
+        var index = 0
         for (i in indexChar - 1 downTo 0) {
             if (!text[i].isDigit() && text[i] != '.') {
                 index = i + 1
@@ -329,9 +358,9 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun isDouble(str: Char): Boolean {
-        val str: String = str.toString()
+        val s = str.toString()
         return try {
-            str.toDouble()
+            s.toDouble()
             true
         } catch (e: NumberFormatException) {
             false
@@ -339,10 +368,10 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun isInt(n: Double): Boolean {
-        if (n - n.toInt() > 0) {
-            return false
+        return if (n - n.toInt() > 0) {
+            false
         } else {
-            return true
+            true
         }
     }
 
@@ -350,11 +379,7 @@ class CalculatorViewModel: ViewModel() {
         return (n * (PI / 180))
     }
 
-    private fun radiusToDeg(n: Double): Double {
-        return (n * (180 / PI))
-    }
-
-    private fun CalculateResult(t: String) {
+    private fun calculateResult(t: String) {
         var text: String = t
         clearError()
         if (_state.value.expression.isEmpty()){
@@ -384,19 +409,19 @@ class CalculatorViewModel: ViewModel() {
                 num = text.substring( pos1 + 1,pos2)
 
                 if(pos1 - 1 != -1 && pos2 + 1 != text.length
-                    && (isDouble(text[pos1-1]) ||text[pos1-1].equals(')')  )
-                    && (isDouble(text[pos2+1]) || text[pos2+1].equals('(')   )
+                    && (isDouble(text[pos1-1]) ||text[pos1-1]==')'  )
+                    && (isDouble(text[pos2+1]) || text[pos2+1] == '(')
                     )
                 {
                     text = text.substring(0, pos1) + "x" + (num) + 'x' + text.substring(pos2 + 1, text.length)
 
-                }else if (pos1 - 1 != -1 && ( isDouble(text[pos1-1]) || text[pos1-1].equals(')') )) {
-                    if (pos2  == text.length - 1) {
-                        text = text.substring(0, pos1) + "x" + (num)
+                }else if (pos1 - 1 != -1 && ( isDouble(text[pos1-1]) || text[pos1-1] == ')')) {
+                    text = if (pos2  == text.length - 1) {
+                        text.substring(0, pos1) + "x" + (num)
                     } else {
-                        text = text.substring(0, pos1) + "x" + (num) + text.substring(pos2 + 1, text.length)
+                        text.substring(0, pos1) + "x" + (num) + text.substring(pos2 + 1, text.length)
                     }
-                }else if(pos2 + 1 != text.length && (isDouble(text[pos2+1]) || text[pos2+1].equals('(') ) ) {
+                }else if(pos2 + 1 != text.length && (isDouble(text[pos2+1]) || text[pos2+1] == '(') ) {
                     text = text.substring(0, pos1) + num + 'x' + text.substring(pos2 + 1, text.length)
                 }else {
                     if (pos2+1 == text.length){
@@ -477,12 +502,9 @@ class CalculatorViewModel: ViewModel() {
 
     private fun insidePar(t: String): MutableList<Int> { //(34(23*2)3(23))
         var text: String = t
-        var pos1=text.indexOf('(')
-        var pos2=text.indexOf(')')
-        val l = mutableListOf<Int>(text.indexOf('('),text.indexOf(')'))
+        val l = mutableListOf(text.indexOf('('),text.indexOf(')'))
         text=text.substring(0,l[0])+'['+text.substring(l[0]+1,l[1])+']'+text.substring(l[1]+1,text.length)
         while('(' in text.substring(0,l[1])) {
-            pos1=text.indexOf('(')
             l[0] = text.indexOf('(')
             text = text.substring(0,l[0])+'['+text.substring(l[0]+1,text.length)
         }
@@ -519,23 +541,17 @@ class CalculatorViewModel: ViewModel() {
                 return false
             }
         }
-        if (countPar!=0){
-            return false
-        }
-        return true
+        return countPar == 0
     }
 
     private fun isOperator(c: Char): Boolean{
-        if (c=='+' || c=='-' || c=='x' || c=='/' || c=='^'){
-            return true
-        }
-        return false
+        return c=='+' || c=='-' || c=='x' || c=='/' || c=='^'
     }
 
     private fun enterDecimal() {
         clearError()
         if (_state.value.expression.last().isDigit()){
-            var find: Boolean = false
+            var find = false
             for (i in _state.value.expression.length downTo 0){
                 if (_state.value.expression[i] == '.'){
                     find = true
@@ -580,7 +596,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun displayResult(){
-        if (_state.value.expression.length<=MAX_NUM_LENGHT){
+        if (_state.value.expression.length<=MAX_NUM_LENGTH){
             _state.value = _state.value.copy(
                 displayed = _state.value.expression
             )
@@ -589,10 +605,10 @@ class CalculatorViewModel: ViewModel() {
             )
         } else {
             _state.value = _state.value.copy(
-                displayed = _state.value.expression.substring(0, MAX_NUM_LENGHT)+"_"
+                displayed = _state.value.expression.substring(0, MAX_NUM_LENGTH)+"_"
             )
             _state.value = _state.value.copy(
-                pos = MAX_NUM_LENGHT
+                pos = MAX_NUM_LENGTH
             )
         }
 
@@ -603,24 +619,24 @@ class CalculatorViewModel: ViewModel() {
             _state.value = _state.value.copy(
                 pos = p
             )
-            if(p>MAX_NUM_LENGHT){
+            if(p>MAX_NUM_LENGTH){
                 if (_state.value.pos==_state.value.expression.length){
                     _state.value = _state.value.copy(
-                        displayed = "_"+_state.value.expression.substring(_state.value.pos-MAX_NUM_LENGHT, _state.value.pos)
+                        displayed = "_"+_state.value.expression.substring(_state.value.pos-MAX_NUM_LENGTH, _state.value.pos)
                     )
                 }else{
                     _state.value = _state.value.copy(
-                        displayed = "_"+_state.value.expression.substring(_state.value.pos-MAX_NUM_LENGHT, _state.value.pos)+"_"
+                        displayed = "_"+_state.value.expression.substring(_state.value.pos-MAX_NUM_LENGTH, _state.value.pos)+"_"
                     )
                 }
             }else {
-                if (_state.value.expression.length< MAX_NUM_LENGHT ){
+                if (_state.value.expression.length< MAX_NUM_LENGTH ){
                     _state.value = _state.value.copy(
                         displayed = _state.value.expression.substring(0,_state.value.expression.length)
                     )
                 } else {
                     _state.value = _state.value.copy(
-                        displayed = _state.value.expression.substring(0, MAX_NUM_LENGHT)+"_"
+                        displayed = _state.value.expression.substring(0, MAX_NUM_LENGTH)+"_"
                     )
                 }
             }
@@ -629,7 +645,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     companion object {
-        private const val MAX_NUM_LENGHT=10
+        private const val MAX_NUM_LENGTH=10
         private val errorList = arrayOf("SyntaxError", "divisionByZero")
     }
 

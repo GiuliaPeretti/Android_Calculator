@@ -54,7 +54,7 @@ dependencies {
     implementation ("androidx.navigation:navigation-fragment-ktx:2.3.1")
     implementation ("androidx.navigation:navigation-ui-ktx:2.3.1")
 
-
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
 
     implementation("androidx.core:core-ktx:1.9.0")
