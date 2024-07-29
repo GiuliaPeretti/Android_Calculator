@@ -76,7 +76,6 @@ class CalculatorViewModel: ViewModel() {
                 || expression.contains("sin", ignoreCase = true)
                 || expression.contains("tan", ignoreCase = true)
             ) {
-                //TODO: sin(2)cos(3) in questi casi va messo un x in mezzo
                 for (i in expression.indices) {
                     if (expression[i] == '^') {
                         expression = doOperation(exp = expression, i = i)
@@ -145,7 +144,6 @@ class CalculatorViewModel: ViewModel() {
             return errorList[1]
         }
         val result: Double = getResult(n1, n2, exp[i])
-        //TODO("check if result is int")
         return exp.substring(0,indexNumbers[0])+result+exp.substring(indexNumbers[1]+1,exp.length)
     }
 
@@ -159,7 +157,7 @@ class CalculatorViewModel: ViewModel() {
             }
         }
         var n = text.substring(indexChar+1, index+1).toDouble()
-        if (index!= 0 && text[index-1].isDigit() ){
+        if (indexChar!= 0 && text[indexChar-1].isDigit() ){
             return text.substring(0,indexChar)+"x" + sqrt(n).toString() + text.substring(index+1, text.length)
         }
         return text.substring(0,indexChar)+ sqrt(n).toString() + text.substring(index+1, text.length)
@@ -366,6 +364,7 @@ class CalculatorViewModel: ViewModel() {
             _state.value = _state.value.copy(
                 expression = errorList[0]
             )
+            displayResult()
             return
         }
         if (text.contains("π", ignoreCase = true)){
@@ -376,13 +375,12 @@ class CalculatorViewModel: ViewModel() {
         }
 
         while ('(' in text) {
-            //TODO: togli ()
             val list: MutableList<Int> = insidePar(text)
             val pos1 = list[0]
             val pos2 = list[1]
             var num: String
+
             if (isDouble(text.substring( pos1 + 1,pos2))) {
-                Log.d("deb", "dentro la parentesi è num")
                 num = text.substring( pos1 + 1,pos2)
 
                 if(pos1 - 1 != -1 && pos2 + 1 != text.length
@@ -405,23 +403,38 @@ class CalculatorViewModel: ViewModel() {
                         text = text.substring(0,pos1)+(num)
                     } else {
                         text = text.substring(0, pos1) + (num) + text.substring(pos2 + 1, text.length)
+                        if(text[pos1-1]=='√'){
+                            text=squareRoot(text, pos1-1)
+                        }
                     }
                 }
-            }
-            else {
+/*
+            } else if(text.substring( pos1 + 1,pos2)==""){
+                text= errorList[0]
+
+ */
+            } else {
                 Log.d("deb", text)
                 val te=text.substring(pos1+1,pos2)
                 Log.d("deb", te)
                 val r=performOperation(te)
+
                 if (r in errorList){
                     text=r
-                }else{
+                }else if(text[pos1-1]=='√'){
+                    text=text.substring(0,pos1+1)+r+text.substring(pos2,text.length)
+                    text=squareRoot(text, pos1-1)
+                }
+                else{
                     text=text.substring(0,pos1+1)+r+text.substring(pos2,text.length)
                 }
             }
         }
 
-        val r=performOperation(text)
+        var r=performOperation(text)
+        if (isDouble(r) && isInt(r.toDouble())){
+            r=r.toDouble().toInt().toString()
+        }
         _state.value = _state.value.copy(
             expression = r
         )
@@ -481,6 +494,9 @@ class CalculatorViewModel: ViewModel() {
         //TODO: aggiungi regole per %, pi lg, ln ecc e sqrt
         var countPar = 0
         if (isOperator(t[0]) || isOperator(t[t.length-1])){
+            return false
+        }
+        if(t.contains("()")){
             return false
         }
         var op = false
@@ -565,7 +581,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun displayResult(){
-        if (_state.value.expression.length<=10){
+        if (_state.value.expression.length<=MAX_NUM_LENGHT){
             _state.value = _state.value.copy(
                 displayed = _state.value.expression
             )
@@ -574,10 +590,10 @@ class CalculatorViewModel: ViewModel() {
             )
         } else {
             _state.value = _state.value.copy(
-                displayed = _state.value.expression.substring(0, 10)+"_"
+                displayed = _state.value.expression.substring(0, MAX_NUM_LENGHT)+"_"
             )
             _state.value = _state.value.copy(
-                pos = 10
+                pos = MAX_NUM_LENGHT
             )
         }
 
@@ -588,24 +604,24 @@ class CalculatorViewModel: ViewModel() {
             _state.value = _state.value.copy(
                 pos = p
             )
-            if(p>15){
+            if(p>MAX_NUM_LENGHT){
                 if (_state.value.pos==_state.value.expression.length){
                     _state.value = _state.value.copy(
-                        displayed = "_"+_state.value.expression.substring(_state.value.pos-15, _state.value.pos)
+                        displayed = "_"+_state.value.expression.substring(_state.value.pos-MAX_NUM_LENGHT, _state.value.pos)
                     )
                 }else{
                     _state.value = _state.value.copy(
-                        displayed = "_"+_state.value.expression.substring(_state.value.pos-15, _state.value.pos)+"_"
+                        displayed = "_"+_state.value.expression.substring(_state.value.pos-MAX_NUM_LENGHT, _state.value.pos)+"_"
                     )
                 }
             }else {
-                if (_state.value.expression.length< 15 ){
+                if (_state.value.expression.length< MAX_NUM_LENGHT ){
                     _state.value = _state.value.copy(
                         displayed = _state.value.expression.substring(0,_state.value.expression.length)
                     )
                 } else {
                     _state.value = _state.value.copy(
-                        displayed = _state.value.expression.substring(0, 15)+"_"
+                        displayed = _state.value.expression.substring(0, MAX_NUM_LENGHT)+"_"
                     )
                 }
             }
@@ -614,7 +630,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     companion object {
-        private const val MAX_NUM_LENGHT=8
+        private const val MAX_NUM_LENGHT=10
         private val errorList = arrayOf("SyntaxError", "divisionByZero")
     }
 

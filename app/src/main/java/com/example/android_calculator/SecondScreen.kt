@@ -60,7 +60,7 @@ fun SecondScreen(
                     .fillMaxWidth()
                     .padding(vertical = 60.dp),
                 fontWeight = FontWeight.Light,
-                fontSize = 40.sp,
+                fontSize = 60.sp,
                 color = Color.White,
                 maxLines = 1
             )
