@@ -21,19 +21,21 @@ sealed class ThemeColors(
         val background: Color,
         val secondary: Color,
         val primary: Color,
-        val tertiary: Color
+        val tertiary: Color,
+        val text: Color
     ) {
         object Night : ThemeColors(
             background = Color(0xFF000000),
-            primary = Color(0xFF4FB64C),
-            secondary = Color(0xFF4FB64C),
-            tertiary = Color(0xffffffff)
+            primary = Color(0xFF3b2835),
+            secondary = Color(0xFF6b4c61),
+            tertiary = Color(0xFFd91698),
+            text = Color(0xFFFFFFFF)
         )
         object Day : ThemeColors(
-            background = Color(0xFF000000),
-            primary = Color(0xFF4FB64C),
-            secondary = Color(0xFF4FB64C),
-            tertiary = Color(0xffffffff)
+            background = Color(0xFFf5edeb),
+            primary = Color(0xFFe3cada),
+            secondary = Color(0xFFEFB8C8),
+            tertiary = Color(0xFFed9fc9),
+            text = Color(0xFF000000)
         )
     }
-}
